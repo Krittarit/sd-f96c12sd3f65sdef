@@ -61,9 +61,9 @@ local function updateShoomsAndTime()
     local shoomsDifference = currentShooms - initialShooms -- คำนวณจำนวนที่เพิ่มขึ้น
 
     if shoomsDifference > 0 then
-        shoomsLabel.Text = string.format("🍄 Shooms: %d (+%d)", currentShooms, shoomsDifference)
+        shoomsLabel.Text = string.format("☄️ GAE: %d (+%d)", currentShooms, shoomsDifference)
     else
-        shoomsLabel.Text = string.format("🍄 Shooms: %d", currentShooms)
+        shoomsLabel.Text = string.format("☄️ GAE: %d", currentShooms)
     end
 end
 
