@@ -1,1 +1,0 @@
-task.wait(1)
