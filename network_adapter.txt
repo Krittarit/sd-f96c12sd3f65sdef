@@ -1,0 +1,58 @@
+task.wait(15)
+local function executeSlotCreation()
+    -- Services and local player
+    local Players = game:GetService("Players")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local LocalPlayer = Players.LocalPlayer
+
+    -- Check if character exists in workspace.Characters
+    if workspace:FindFirstChild("Characters") and workspace.Characters:FindFirstChild(LocalPlayer.Name) then
+        print("Character found, no action taken.")
+        return
+    end
+
+    -- Navigate GUI and count visible slots
+    local count = 0
+    local slotsFrame = LocalPlayer.PlayerGui:FindFirstChild("SaveSelectionGui")
+        and LocalPlayer.PlayerGui.SaveSelectionGui:FindFirstChild("ContainerFrame")
+        and LocalPlayer.PlayerGui.SaveSelectionGui.ContainerFrame:FindFirstChild("AllSlotsFrame")
+        and LocalPlayer.PlayerGui.SaveSelectionGui.ContainerFrame.AllSlotsFrame:FindFirstChild("SlotsFrame")
+
+    if not slotsFrame then
+        warn("SlotsFrame not found")
+        return
+    end
+
+    for i = 1, 3 do
+        local slot = slotsFrame:FindFirstChild(tostring(i))
+        if slot and slot:FindFirstChild("InnerFrame") and slot.InnerFrame:FindFirstChild("EmptyFrame") and slot.InnerFrame.EmptyFrame.Visible then
+            count = count + 1
+        end
+    end
+
+    if count == 0 then
+        print("No visible slots found.")
+        return
+    end
+
+    -- Invoke remote for each visible slot
+    local purchaseRemote = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("PurchaseCreatureRemote")
+    if not purchaseRemote then
+        warn("PurchaseCreatureRemote not found")
+        return
+    end
+
+    local args = {"TrialCreatures", "Eulopii", false}
+    for i = 1, count do
+        local success, result = pcall(purchaseRemote.InvokeServer, purchaseRemote, unpack(args))
+        if success then
+            print("Slot " .. i .. " created successfully")
+        else
+            warn("Failed to create slot " .. i .. ": " .. tostring(result))
+        end
+        if i < count then wait(0.3) end -- Reduced delay for optimization
+    end
+end
+
+-- Execute with error handling
+pcall(executeSlotCreation)

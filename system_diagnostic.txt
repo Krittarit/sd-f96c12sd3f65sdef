@@ -1,0 +1,220 @@
+task.wait(30)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+
+-- Webhook URLs
+local warningWebhookURL = "https://discord.com/api/webhooks/1378261453588533269/4HymTNK-PviMz-Y2I3VdWvRua_tuhLh0G-tb7zFLlwen926XO5AD80q0LKBccwya4OKZ"
+local totalWebhookURL = "https://discord.com/api/webhooks/1378870715280789534/yyLNMSjXMJMSMf0WPvaX1BIvZZjQmwfNzZ5Ki4sgeDEFya_PIR3Jysylx9kbTtHrRwmF"
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- รอให้ Data GUI โหลดเสร็จ
+local dataGui = playerGui:WaitForChild("Data")
+local coinsObject = dataGui:WaitForChild("Coins")
+
+-- ตัวแปรสำหรับเก็บข้อมูล
+local lastCoinValue = coinsObject.Value
+local lastUpdateTime = tick()
+local checkInterval = 10 * 60 -- 10 นาที (600 วินาที)
+local hasSentWebhook = false
+
+-- ฟังก์ชันช่วย: สร้าง JSON สำหรับ Webhook
+local function createWebhookJson(content, title, color, fields)
+    local embed = {
+        title = title,
+        color = color,
+        fields = fields,
+        footer = { text = "อัปเดต: " .. os.date("%Y-%m-%d %H:%M:%S") }
+    }
+    return HttpService:JSONEncode({
+        content = content,
+        embeds = { embed },
+        username = "เห็ด Monitor",
+        avatar_url = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHlsanRvN3FoeXJiZzEyN2hmaWhzNW9wb3NldmhxeHlsYzRtOGQxYiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/jlVObChD6Fb5C/giphy.gif"
+    })
+end
+
+-- ฟังก์ชัน: ส่ง Webhook
+local function sendWebhookRequest(jsonData, url)
+    local requestFunction = (syn and syn.request) or (http and http.request) or request
+    if not requestFunction then
+        return false
+    end
+
+    local success, response = pcall(function()
+        return requestFunction({
+            Url = url,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = jsonData
+        })
+    end)
+
+    return success
+end
+
+-- ฟังก์ชัน: ส่ง Webhook รายงานเห็ดไม่เปลี่ยนแปลง
+local function sendCoinsWarningWebhook()
+    local fields = {
+        { name = "👤 ผู้เล่น จากเครื่องหมายเลข 4", value = "||" .. player.Name .. "||", inline = false },
+        { name = "🍄 เห็ดล่าสุด", value = "```" .. tostring(lastCoinValue) .. "```", inline = true },
+        { name = "⏰ ระยะเวลา", value = "```10 นาที```", inline = true },
+        { name = "⚠️ สาเหตุ", value = "```เห็ดไม่เปลี่ยนแปลงเป็นเวลา 10 นาที```", inline = false }
+    }
+
+    local jsonData = createWebhookJson(
+        "🚨 **เห็ดไม่เปลี่ยนแปลง!**",
+        "แจ้งเตือนเห็ดค้าง",
+        16711680,
+        fields
+    )
+    sendWebhookRequest(jsonData, warningWebhookURL)
+end
+
+-- ฟังก์ชันเช็ค Coins
+local function checkCoins()
+    local currentCoinValue = coinsObject.Value
+    local currentTime = tick()
+    
+    -- ถ้า Coins เปลี่ยนแปลง (เพิ่มหรือลด)
+    if currentCoinValue ~= lastCoinValue then
+        lastCoinValue = currentCoinValue
+        lastUpdateTime = currentTime
+        hasSentWebhook = false -- รีเซ็ตสถานะ webhook
+    else
+        -- เช็คว่าผ่านไป 10 นาทีหรือยัง
+        local timeDifference = currentTime - lastUpdateTime
+        
+        if timeDifference >= checkInterval and not hasSentWebhook then
+            hasSentWebhook = true
+            -- ส่ง webhook ก่อนออกเกม
+            sendCoinsWarningWebhook()
+            task.wait(2) -- รอให้ webhook ส่งเสร็จ
+            game:Shutdown()
+        end
+    end
+end
+
+-- ฟังก์ชัน: อ่านและอัปเดต Mushtotal.json
+local function updateMushTotal()
+    local fileName = "Mushtotal.json"
+    local mushData = { players = {} }
+    local totalMush = 0
+
+    -- อ่านไฟล์ที่มีอยู่ (ถ้ามี)
+    local success, existingData = pcall(function()
+        return readfile(fileName)
+    end)
+
+    if success and existingData then
+        local decodedData = HttpService:JSONDecode(existingData) or {}
+        -- รองรับโครงสร้างเก่า โดยคัดลอกเฉพาะคีย์ที่ไม่ใช่ "total"
+        local sourceData = decodedData.players or decodedData
+        for key, value in pairs(sourceData) do
+            if key ~= "total" and type(value) == "number" and value >= 0 then
+                mushData.players[key] = value
+            end
+        end
+    end
+
+    -- อัปเดตข้อมูลของผู้เล่นปัจจุบัน (ตรวจสอบว่าเป็นตัวเลขบวก)
+    if type(coinsObject.Value) == "number" and coinsObject.Value >= 0 then
+        mushData.players[player.Name] = coinsObject.Value
+    else
+        warn("Invalid coin value for player " .. player.Name .. ": " .. tostring(coinsObject.Value))
+    end
+
+    -- คำนวณผลรวมเห็ดทั้งหมด
+    for _, value in pairs(mushData.players) do
+        if type(value) == "number" and value >= 0 then
+            totalMush = totalMush + value
+        end
+    end
+    mushData.total = totalMush
+
+    -- เขียนข้อมูลกลับไปที่ไฟล์
+    local successWrite = pcall(function()
+        writefile(fileName, HttpService:JSONEncode(mushData))
+    end)
+    if not successWrite then
+        warn("Failed to write to Mushtotal.json")
+    end
+
+    return mushData, totalMush
+end
+
+-- ฟังก์ชัน: ส่ง Webhook รายงาน Mushtotal
+local function sendMushTotalWebhook(mushData, totalMush)
+    local fields = {}
+    local playerCount = 0
+
+    -- ตรวจสอบว่ามีข้อมูลผู้เล่นหรือไม่
+    if mushData.players and next(mushData.players) then
+        for playerName, mushAmount in pairs(mushData.players) do
+            if type(mushAmount) == "number" then
+                table.insert(fields, {
+                    name = "👤 " .. playerName,
+                    value = "```" .. tostring(mushAmount) .. " mush```",
+                    inline = true
+                })
+                playerCount = playerCount + 1
+            end
+        end
+    else
+        table.insert(fields, {
+            name = "⚠️ สถานะ",
+            value = "```ไม่มีข้อมูลผู้เล่น```",
+            inline = false
+        })
+    end
+
+    -- เพิ่มฟิลด์สำหรับผลรวมและจำนวนผู้เล่น
+    table.insert(fields, {
+        name = "📊 รวมทั้งหมด",
+        value = "```" .. tostring(totalMush) .. " mush```",
+        inline = false
+    })
+    table.insert(fields, {
+        name = "👥 จำนวนผู้เล่น",
+        value = "```" .. tostring(playerCount) .. " คน```",
+        inline = false
+    })
+
+    local jsonData = createWebhookJson(
+        "🍄 **รายงานเห็ดทั้งหมด**",
+        "สรุปจำนวนเห็ด จากเครื่องหมายเลข 4",
+        65280,
+        fields
+    )
+    local success = sendWebhookRequest(jsonData, totalWebhookURL)
+    if not success then
+        warn("Failed to send Mushtotal webhook")
+    end
+end
+
+-- ฟังก์ชัน: อัปเดตและส่ง Mushtotal ตามเวลา
+local function startMushTotalTimer()
+    local mushUpdateInterval = 20 * 60 -- 5 นาที (300 วินาที)
+    task.spawn(function()
+        while true do
+            local mushData, totalMush = updateMushTotal()
+            sendMushTotalWebhook(mushData, totalMush)
+            task.wait(mushUpdateInterval)
+        end
+    end)
+end
+
+-- เริ่มการตรวจสอบ Coins
+local connection = RunService.Heartbeat:Connect(checkCoins)
+
+-- เริ่มตัวตั้งเวลา Mushtotal
+startMushTotalTimer()
+
+-- ฟังก์ชันหยุดการทำงาน
+_G.stopCoinMonitor = function()
+    if connection then
+        connection:Disconnect()
+    end
+end

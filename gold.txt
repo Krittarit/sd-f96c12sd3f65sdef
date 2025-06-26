@@ -1,0 +1,169 @@
+task.wait(60)
+-- Get the Players service
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Wait for LocalPlayer to fully load
+if not LocalPlayer then
+    Players.PlayerAdded:Wait()
+    LocalPlayer = Players.LocalPlayer
+end
+
+-- Load Roblox Account Manager module
+local success, RAMAccount = pcall(function()
+    return loadstring(game:HttpGet('https://raw.githubusercontent.com/ic3w0lf22/Roblox-Account-Manager/master/RAMAccount.lua'))()
+end)
+
+if not success or not RAMAccount then
+    warn("Failed to load Roblox Account Manager module")
+    return
+end
+
+-- Create RAM account instance for the current player
+local MyAccount = RAMAccount.new(LocalPlayer.Name)
+if not MyAccount then
+    warn("Failed to create RAM account for", LocalPlayer.Name)
+    return
+end
+
+-- Function to wait for a UI path to become available
+local function waitForPath(parent, path, timeout)
+    local currentParent = parent
+    local pathParts = string.split(path, ".")
+    for i, part in ipairs(pathParts) do
+        currentParent = currentParent:WaitForChild(part, timeout)
+        if not currentParent then
+            warn("Failed to find", part, "in path", path)
+            return nil
+        end
+        print("Found", part, "in path", path)
+    end
+    return currentParent
+end
+
+-- Function to get coin value for alias
+local function getProgressionText()
+    local aliasText = "Mush: Unknown"
+    local coinValueRaw = nil
+
+    local success, result = pcall(function()
+        -- Wait for PlayerGui to load
+        local gui = LocalPlayer:WaitForChild("PlayerGui", 30)
+        if not gui then
+            warn("PlayerGui not found after 30 seconds")
+            return "GUI not found"
+        end
+
+        -- Wait for Data.Coins path
+        local coins = waitForPath(gui, "Data.Coins", 30)
+        if not coins then
+            return "Data.Coins path not found"
+        end
+
+        -- Get the Value property
+        coinValueRaw = coins.Value
+        if coinValueRaw == nil then
+            warn("Coin value is nil")
+            return "Coin value is nil"
+        end
+
+        -- Debug print to confirm the value
+        print("Coin value retrieved:", coinValueRaw)
+
+        -- Format the alias
+        return "Mush: " .. tostring(coinValueRaw)
+    end)
+
+    if success then
+        aliasText = result
+    else
+        warn("Error accessing coins UI:", result)
+    end
+
+    return aliasText, coinValueRaw
+end
+
+-- Function to check trade status for description
+local function getBackpackItems()
+    local descriptionText = "Trade status unknown"
+    local success, result = pcall(function()
+        -- Wait for PlayerGui to load
+        local gui = LocalPlayer:WaitForChild("PlayerGui", 30)
+        if not gui then
+            warn("PlayerGui not found after 30 seconds")
+            return "GUI not found"
+        end
+
+        -- Wait for the full trade UI path
+        local tradePath = waitForPath(gui, "SaveSelectionGui.ContainerFrame.BottomFrame.SecondaryButtonsFrame", 30)
+        if not tradePath then
+            return "Trade UI path not found"
+        end
+
+        -- Check TradeRealmLocked.Visible
+        local tradeLocked = tradePath:FindFirstChild("TradeRealmLocked")
+        local tradeRealm = tradePath:FindFirstChild("TradeRealm")
+
+        if tradeLocked and tradeLocked:IsA("GuiObject") and tradeLocked.Visible then
+            return "Cannottrade"
+        elseif tradeRealm and tradeRealm:IsA("GuiObject") and tradeRealm.Visible then
+            return "Cantrade"
+        end
+        return "Trade status not found"
+    end)
+
+    if success then
+        descriptionText = result
+    else
+        warn("Error accessing trade UI:", result)
+    end
+    return descriptionText
+end
+
+-- Handle character respawns to re-initialize UI paths if needed
+LocalPlayer.CharacterAdded:Connect(function()
+    print("Character respawned, re-checking UI paths")
+end)
+
+-- Update alias and description every 10 minutes (600 seconds)
+while true do
+    -- Verify that LocalPlayer and MyAccount are still valid
+    if not LocalPlayer or not MyAccount then
+        warn("LocalPlayer or MyAccount is invalid, stopping updates")
+        break
+    end
+
+    -- Get alias and raw coin value
+    local alias, rawCoinValue = getProgressionText()
+
+    -- Debug print: Show the raw coin value before setting the alias
+    if rawCoinValue ~= nil then
+        print("Mush has " .. tostring(rawCoinValue) .. " yay")
+    else
+        print("Mush has no coin value yet")
+    end
+
+    -- Set alias
+    local success, errorMsg = pcall(function()
+        MyAccount:SetAlias(alias)
+    end)
+    if not success then
+        warn("Failed to set alias:", errorMsg)
+    end
+
+    -- Get and set description
+    local description = getBackpackItems()
+    success, errorMsg = pcall(function()
+        MyAccount:SetDescription(description)
+    end)
+    if not success then
+        warn("Failed to set description:", errorMsg)
+    end
+
+    -- Log results with timestamp
+    local timestamp = os.date("%Y-%m-%d %H:%M:%S")
+    print(string.format("[%s] Alias set to: %s, Description set to: %s", timestamp, alias, description))
+
+    -- Wait 10 minutes (600 seconds) before the next update
+    wait(600)
+end

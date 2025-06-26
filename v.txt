@@ -1,0 +1,30 @@
+task.wait(60)
+-- ServerScriptService > CheckPrivateServer.lua
+local Workspace = game:GetService("Workspace")
+local Game = game
+
+-- ฟังก์ชันตรวจสอบและจัดการ Private Server
+local function checkPrivateServer()
+    -- ตรวจสอบว่า IsPrivateServer มีอยู่และใช้งานได้
+    if Workspace:FindFirstChild("IsPrivateServer") == nil then
+        warn("IsPrivateServer property not found. Shutting down as a precaution...")
+        Game:Shutdown()
+        return
+    end
+
+    -- ตรวจสอบสถานะ Private Server
+    if Workspace.IsPrivateServer then
+        print("This is a Private Server. Server will continue running.")
+        -- ไม่ทำอะไรเพิ่มเติม (เทียบเท่ากับ "หยุด" หรือดำเนินการต่อ)
+    else
+        print("This is not a Private Server. Shutting down...")
+        Game:Shutdown()
+    end
+end
+
+-- รันฟังก์ชันเมื่อเซิร์ฟเวอร์เริ่ม
+local success, errorMessage = pcall(checkPrivateServer)
+if not success then
+    warn("Error in checkPrivateServer: " .. errorMessage)
+    Game:Shutdown() -- ปิดเกมหากเกิดข้อผิดพลาด
+end
