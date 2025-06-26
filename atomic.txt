@@ -26,7 +26,7 @@ shoomsLabel.BackgroundTransparency = 1
 shoomsLabel.TextColor3 = Color3.new(1, 1, 1) -- สีขาว
 shoomsLabel.Font = Enum.Font.SourceSansBold
 shoomsLabel.TextScaled = true
-shoomsLabel.Text = "🍄 Shooms: 0" -- ค่าเริ่มต้น
+shoomsLabel.Text = "☄️ GAE: 0" -- ค่าเริ่มต้น
 shoomsLabel.ZIndex = 11
 shoomsLabel.Parent = screenGui
 
