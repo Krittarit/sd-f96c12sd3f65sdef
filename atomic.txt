@@ -67,8 +67,8 @@ local function updateShoomsAndTime()
     end
 end
 
--- อัปเดตค่าทุก 0.5 วินาทีให้ GUI แสดงค่า Shooms และเวลาที่ออนไลน์แบบเรียลไทม์
-game:GetService("RunService").Heartbeat:Connect(function()
-    wait(0.5) -- อัปเดตทุก 0.5 วินาที ลดการโหลด CPU
+-- อัปเดตค่าทุก 3 นาที (180 วินาที) แทนการใช้ Heartbeat เพื่อลดการโหลด CPU
+while true do
+    wait(180) -- อัปเดตทุก 3 นาที ลดการโหลด CPU อย่างมาก
     updateShoomsAndTime()
-end)
+end
