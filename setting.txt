@@ -1,0 +1,127 @@
+--performancemode
+local args = {
+	"States",
+	{
+		"CharacterReparent",
+		true
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+--camerashake
+local args = {
+	"States",
+	{
+		"CameraShake",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+--HUDPINNEDMISSION
+local args = {
+	"States",
+	{
+		"HUDPinnedMissions",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+--Redeucebloom
+local args = {
+	"States",
+	{
+		"ReduceBloom",
+		true
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+
+--Medalautoclip
+local args = {
+	"States",
+	{
+		"AutoClipping",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+
+
+
+--FootprintVisuals
+local args = {
+	"States",
+	{
+		"Footprints",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+--Blood effect
+local args = {
+	"States",
+	{
+		"BloodEffects",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+
+--Camera smoothing
+local args = {
+	"States",
+	{
+		"CameraSmoothing",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+--HUD Item Notification
+local args = {
+	"States",
+	{
+		"HUDItemNotification",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+--HQLightning
+local args = {
+	"States",
+	{
+		"HQLighting",
+		false
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
