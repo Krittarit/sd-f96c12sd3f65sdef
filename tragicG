@@ -1,0 +1,1436 @@
+-- Combined Auto Join & Trade Script for Roblox
+-- This script combines auto-joining functionality with auto-trading
+
+-- ===== SHARED PLAYER LISTS =====
+local SENDER_LIST = { 'OmiorsoFilus', 'OtinouseaRer', 'HantingaThen', 'EntaredoRore', 'UtindowoNera', 'RoresoweDint',
+    'OneroustiNdi', 'UntongoTaton', 'EnditouTeati', 'RuseditoNsin', 'TisedisiNgen', 'SongiteaNtea', 'LintouriShen',
+    'RearimpuTeat', 'EsongathuTan', 'TedingeNdeng', 'OflousoMenca', 'OneratiMouro', 'EroutorouNer', 'DintoreDeron',
+    'IndendoMondu', 'EsimenteRero', 'NantenteDend', 'EroundaTousi', 'AllatereNdot', 'OfofishaSath', 'UrendereNdas',
+    'YusatriSindu', 'OfousheRteng', 'HeshofeSesed', 'EngandeaTeat', 'UstofofaNera', 'EndederiNgat', 'OringateRise',
+    'OxperendeSof', 'AngondouLout', 'IsateseRista', 'DarisereSero', 'PistomiCompe', 'ItinoteDrato', 'OreshusouLil',
+    'EndouroReror', 'HateritoNden', 'EntofriTores', 'OfoutofeDomi', 'OredintiScal', 'InengitoFang', 'EssicheSidri',
+    'EserarsuNdon', 'TunduteDenge', 'AteshereNdes', 'EnoriofruLyi', 'YicariseDsed', 'OntouneDesic', 'EnediteRilal',
+    'ErangeseNtor', 'EnderonoNdie', 'OmearesiLire', 'EntingoNtito', 'FeditintoRor', 'UstaneriCout', 'ErinedaNtene',
+    'OreresaLiten', 'RouneneNered', 'ImashurieLli', 'NatonoreNdin', 'UsedoreRerer', 'ErontengeDen', 'EdedaneDindi',
+    'OntararseaRe', 'DeneditoMmis', 'UtestendeSat', 'AbundowouShu', 'AnerereRatou', 'OwiteraDadea', 'IseroraThito',
+    'SereditheRof', 'EntintiTonte', 'AnditireRist', 'HerongoNgeri', 'TeditedeSese', 'TeatheseSent', 'ZeneariSarer',
+    'TorarangeNde', 'TandingiStes', 'NandouraNtou', 'EratoneNgare', 'RoroustiNtor', 'IchathiCeses', 'ErorariNtear',
+    'ResesuthoRat', 'IteroriLeded', 'EngilioLfeds', 'AtendestoFat', 'IlonongeRara', 'ErangasteRas', 'UlofiseNteri',
+    'LisatongeDas', 'IlenedsiThou', 'EngaratouTou', 'DeddistaRsor', 'SicantiConde', 'FistithoRofe', 'HerimedsiTha',
+    'AtondingeRen', 'RofrofriNder', 'OmpusoriNofi', 'UthisatheDis', 'EdeasedouRdu', 'NutonediNgon', 'UntutentoFan',
+    'EsorendaNgan', 'IsteristeRer', 'AdimowhiNgad', 'EdrunichaSha', 'IstasoraRero', 'EristaroRilo', 'CerofentoFes',
+    'OresedouThed', 'UthatoroRend', 'EritesioLlou', 'EsounomeNdun', 'AritowoFiont', 'RoforseDorse', 'EnedileDomio',
+    'AtengendiSen', 'SoromeraLala', 'OntisteRofus', 'EfondintouRi', 'OringoreRine', 'OndorouNeder', 'RofarereDoul',
+    'LendisiTinti', 'EroroundaTha', 'EstoureSende', 'UringereNton', 'IsoniteaRnou', 'AndiusoRinde', 'PintadioResi',
+    'TedalomaSear', 'LofoureDinge', 'InedendeReng', 'RateditheRer', 'EdofoureNgon', 'EserareNouse', 'IlesofaTofan',
+    'AngindoRerin', 'NentateRaron', 'AtofedaNdane',
+    'ItearanoRori', 'HuseresaSter', 'OthitomeRend', 'AnonoraLedis', 'OroneroRisen', 'AtenestoRash', 'IsheratiTofr',
+    'SomorengouNt', 'NathineNtila', 'NoritouTedou', 'OngonteNgere', 'TengantouRon', 'OrondondiSti', 'ErounteNgeri',
+    'EneroneNdeng', 'OfengondoFis', 'NomamerseSsu', 'HofonguNtath', 'YanortuLdero', 'UlyengoRipes', 'ExideastaDat',
+    'RendendaRede', 'EressoroRous', 'FidsouloFour', 'UsinessuRing', 'IsiowomaShus', 'HadanesoMimi', 'DiofentoFera',
+    'NaneadeRista', 'SorouseNesof', 'UtoryithiNta', 'OrnernoNdino', 'TontisseRedd', 'LiditouLatid', 'EsedgitheSit',
+    'AsistitiNtis', 'DanorseDriti', 'UrtungiSaris', 'UrorangoFast', 'ErisediNgori', 'MandaraRises', 'EstoraneReat',
+    'EmofingiSere', 'EndoreroRisi', 'EntatofaTeal', 'AntendoRound', 'OgorsidreDes', 'LongullaSofe', 'IthandoReror',
+    'ImalistiNoor', 'YaritithiDor', 'EredondeRera', 'LangoutoNdit', 'EndeareaRour', 'AthesichaTes', 'AnindouToust',
+    'HorithiNenti', 'TestoriTesen', 'OneneraRoure', 'SonerindaSis', 'AnerithaThes', 'OmintestiTor', 'UthineroRine',
+    'IsenelaLoull' }
+local RECEIVER_LIST = { 'OllitisoRida', 'DerouriToure', 'SititedoRate', 'HasidedoRest', 'EntorsoNomom', 'AsidissaSass',
+    'RinduteSiond', 'EserontoNtit', 'RisongoRised', 'SedessaSitha', 'PanguseSeror', 'UntoureLluso', 'OraredeSofer',
+    'TiollutiLers' }
+
+-- ===== SERVICES =====
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local GuiService = game:GetService("GuiService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- ===== GLOBAL VARIABLES =====
+local tradeCount = 0
+
+-- Token list for trading
+local tokenList = {
+    "ChangeCreatureColorsToken",
+    "CreatureReviveToken",
+    "FullGrowToken",
+    "PartialGrowToken"
+}
+
+-- ===== UTILITY FUNCTIONS FOR SENDERS =====
+local function Clicked_Ui_Sender(path)
+    local success, result = pcall(function()
+        GuiService.SelectedObject = path
+    end)
+    if not success then
+        warn('Error in Clicked_Ui_Sender: ' .. tostring(result))
+    end
+end
+
+local function Click_NOW_Sender()
+    local success, result = pcall(function()
+        VirtualInputManager:SendKeyEvent(true, 13, false, game)  -- Press Enter
+        task.wait(0.1)
+        VirtualInputManager:SendKeyEvent(false, 13, false, game) -- Release Enter
+        task.wait(1)
+        GuiService.SelectedObject = nil
+    end)
+    if not success then
+        warn('Error in Click_NOW_Sender: ' .. tostring(result))
+    end
+end
+
+-- ===== UTILITY FUNCTIONS FOR RECEIVERS =====
+local function Clicked_Ui_Receiver(path)
+    GuiService.SelectedObject = path
+end
+
+local function Click_NOW_Receiver()
+    VirtualInputManager:SendKeyEvent(true, 13, false, game)  -- Press Enter
+    wait(0.1)
+    VirtualInputManager:SendKeyEvent(false, 13, false, game) -- Release Enter
+    wait(3)
+    Clicked_Ui_Receiver(nil)
+end
+
+-- ===== TRADING UTILITY FUNCTIONS =====
+local function Clicked_Ui(path)
+    pcall(function()
+        GuiService.SelectedObject = path
+    end)
+end
+
+local function Click_NOW()
+    pcall(function()
+        VirtualInputManager:SendKeyEvent(true, 13, false, game)  -- Press Enter
+        task.wait(0.1)
+        VirtualInputManager:SendKeyEvent(false, 13, false, game) -- Release Enter
+    end)
+end
+
+local function IsInList(playerName, list)
+    for _, name in ipairs(list) do
+        if name == playerName then
+            return true
+        end
+    end
+    return false
+end
+
+-- ===== AUTO JOIN FUNCTIONS =====
+local function autojointrade(targetPlayerNames)
+    if not targetPlayerNames or type(targetPlayerNames) ~= 'table' or #targetPlayerNames == 0 then
+        warn('Error: targetPlayerNames must be a non-empty table')
+        return
+    end
+
+    local PlaceId = game.PlaceId
+    local PlayerGui = LocalPlayer.PlayerGui
+
+    print('Current PlaceId: ' .. PlaceId)
+
+    if PlaceId == 5233782396 then
+        print('In PlaceId 5233782396, clicking TradeRealm button')
+        local success, result = pcall(function()
+            local success_ui, result_ui = pcall(
+                Clicked_Ui_Sender,
+                PlayerGui.SaveSelectionGui.ContainerFrame.BottomFrame.SecondaryButtonsFrame.TradeRealm.UpperLabel
+            )
+            if not success_ui then
+                warn('Error calling Clicked_Ui_Sender for TradeRealm button: ' .. tostring(result_ui))
+            end
+            task.wait(0.1)
+            local success_now, result_now = pcall(Click_NOW_Sender)
+            if not success_now then
+                warn('Error calling Click_NOW_Sender for TradeRealm button: ' .. tostring(result_now))
+            end
+        end)
+        if not success then
+            warn('Error clicking TradeRealm button (PlaceId 5233782396): ' .. tostring(result))
+        end
+    elseif PlaceId == 14119723130 then
+        local success, result = pcall(function()
+            local RulesFrame = PlayerGui.PromptGui.PromptFrame.PromptFrames.RulesFrame
+            if RulesFrame.Visible == true then
+                print('RulesFrame is visible, clicking Run button')
+                local success_ui, result_ui = pcall(
+                    Clicked_Ui_Sender,
+                    RulesFrame.RunButton.UpperLabel
+                )
+                if not success_ui then
+                    warn('Error calling Clicked_Ui_Sender for RulesFrame Run button: ' .. tostring(result_ui))
+                end
+                task.wait(0.1)
+                local success_now, result_now = pcall(Click_NOW_Sender)
+                if not success_now then
+                    warn('Error calling Click_NOW_Sender for RulesFrame Run button: ' .. tostring(result_now))
+                end
+                task.wait(5)
+                RulesFrame.Visible = false
+                print('Set RulesFrame.Visible to false')
+            end
+        end)
+        if not success then
+            warn('Error handling RulesFrame (PlaceId 14119723130): ' .. tostring(result))
+        end
+
+        -- Check if any target player is in the current server
+        local playersInServer = Players:GetPlayers()
+        local targetInServer = false
+        for _, player in ipairs(playersInServer) do
+            for _, targetName in ipairs(targetPlayerNames) do
+                if player.Name:lower() == targetName:lower() then
+                    targetInServer = true
+                    print('Target player ' .. player.Name .. ' is already in server')
+                    break
+                end
+            end
+            if targetInServer then
+                break
+            end
+        end
+
+        if not targetInServer then
+            -- Continue with joining logic
+            success, result = pcall(function()
+                local success_ui, result_ui = pcall(
+                    Clicked_Ui_Sender,
+                    PlayerGui.PromptGui.PromptFrame.PromptFrames.RulesFrame.RunButton.UpperLabel
+                )
+                if not success_ui then
+                    warn('Error calling Clicked_Ui_Sender for Run button: ' .. tostring(result_ui))
+                end
+                task.wait(0.1)
+                local success_now, result_now = pcall(Click_NOW_Sender)
+                if not success_now then
+                    warn('Error calling Click_NOW_Sender for Run button: ' .. tostring(result_now))
+                end
+            end)
+            if not success then
+                warn('Error clicking Run button (PlaceId 14119723130): ' .. tostring(result))
+                return
+            end
+
+            -- Open Friends menu
+            success, result = pcall(function()
+                local success_ui, result_ui = pcall(
+                    Clicked_Ui_Sender,
+                    PlayerGui.TradeHUDGui.SideFrame.ButtonsFrame.Friends.UpperLabel
+                )
+                if not success_ui then
+                    warn('Error calling Clicked_Ui_Sender for Friends button: ' .. tostring(result_ui))
+                end
+                task.wait(0.1)
+                local success_now, result_now = pcall(Click_NOW_Sender)
+                if not success_now then
+                    warn('Error calling Click_NOW_Sender for Friends button: ' .. tostring(result_now))
+                end
+            end)
+            if not success then
+                warn('Error opening Friends menu (PlaceId 14119723130): ' .. tostring(result))
+                return
+            end
+
+            local startTime = tick()
+            local timeout = 120
+
+            -- Loop to find target player
+            while tick() - startTime < timeout do
+                local found = false
+                local success, result = pcall(function()
+                    local FriendsFrame = PlayerGui.FriendsGui.ContainerFrame.FriendsFrame
+                    for _, child in ipairs(FriendsFrame:GetChildren()) do
+                        if child.Name:match('^%d+$') then
+                            local userId = child.Name
+                            local nameLabel = child.InnerFrame.NameLabel
+                            if nameLabel and nameLabel.Text then
+                                local playerName = nameLabel.Text
+                                print('Found player: ' .. playerName .. ' (UserId: ' .. userId .. ')')
+                                for _, targetName in ipairs(targetPlayerNames) do
+                                    if playerName:lower() == targetName:lower() then
+                                        local success_ui, result_ui = pcall(
+                                            Clicked_Ui_Sender,
+                                            child.InnerFrame.ButtonsFrame.FollowButton.UpperLabel
+                                        )
+                                        if not success_ui then
+                                            warn('Error calling Clicked_Ui_Sender for Follow button: ' ..
+                                                tostring(result_ui))
+                                        end
+                                        task.wait(0.1)
+                                        local success_now, result_now = pcall(Click_NOW_Sender)
+                                        if not success_now then
+                                            warn('Error calling Click_NOW_Sender for Follow button: ' ..
+                                                tostring(result_now))
+                                        end
+                                        print('Joined player: ' .. playerName)
+                                        found = true
+                                        return
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end)
+                if not success then
+                    warn('Error in player search loop (PlaceId 14119723130): ' .. tostring(result))
+                end
+                if found then
+                    break
+                end
+                task.wait(1)
+            end
+
+            -- Timeout handling
+            if tick() - startTime >= timeout then
+                print('Timeout reached, closing Friends menu and leaving')
+                local success, result = pcall(function()
+                    local success_ui, result_ui = pcall(
+                        Clicked_Ui_Sender,
+                        PlayerGui.FriendsGui.ContainerFrame.CloseButton.UpperLabel
+                    )
+                    if not success_ui then
+                        warn('Error calling Clicked_Ui_Sender for Close button: ' .. tostring(result_ui))
+                    end
+                    task.wait(0.1)
+                    local success_now, result_now = pcall(Click_NOW_Sender)
+                    if not success_now then
+                        warn('Error calling Click_NOW_Sender for Close button: ' .. tostring(result_now))
+                    end
+                    task.wait(1)
+                    success_ui, result_ui = pcall(
+                        Clicked_Ui_Sender,
+                        PlayerGui.TradeHUDGui.SideFrame.ButtonsFrame.Leave.UpperLabel
+                    )
+                    if not success_ui then
+                        warn('Error calling Clicked_Ui_Sender for Leave button: ' .. tostring(result_ui))
+                    end
+                    task.wait(0.1)
+                    success_now, result_now = pcall(Click_NOW_Sender)
+                    if not success_now then
+                        warn('Error calling Click_NOW_Sender for Leave button: ' .. tostring(result_now))
+                    end
+                end)
+                if not success then
+                    warn('Error in timeout handling (PlaceId 14119723130): ' .. tostring(result))
+                end
+            end
+        end
+    else
+        warn('Not in supported PlaceId (5233782396 or 14119723130)')
+    end
+end
+
+local function autojointrade_receiver(sender_list, receiver_list)
+    local PlaceId = game.PlaceId
+    local PlayerGui = LocalPlayer.PlayerGui
+
+    print('Receiver mode - Current PlaceId: ' .. PlaceId)
+
+    if PlaceId == 5233782396 then
+        print('Clicking TradeRealm button in PlaceId 5233782396')
+        Clicked_Ui_Receiver(
+            PlayerGui.SaveSelectionGui.ContainerFrame.BottomFrame.SecondaryButtonsFrame.TradeRealm.UpperLabel
+        )
+        task.wait(0.1)
+        Click_NOW_Receiver()
+    elseif PlaceId == 14119723130 then
+        print('Clicking Run button in PlaceId 14119723130')
+        Clicked_Ui_Receiver(
+            PlayerGui.PromptGui.PromptFrame.PromptFrames.RulesFrame.RunButton.UpperLabel
+        )
+        task.wait(0.1)
+        Click_NOW_Receiver()
+    else
+        warn('Not in supported PlaceId (5233782396 or 14119723130)')
+        return
+    end
+
+    -- Check server population
+    local playersInServer = Players:GetPlayers()
+    local nonListedCount = 0
+    for _, player in ipairs(playersInServer) do
+        local isListed = false
+        for _, sender in ipairs(sender_list) do
+            if player.Name:lower() == sender:lower() then
+                isListed = true
+                break
+            end
+        end
+        for _, receiver in ipairs(receiver_list) do
+            if player.Name:lower() == receiver:lower() then
+                isListed = true
+                break
+            end
+        end
+        if not isListed then
+            nonListedCount = nonListedCount + 1
+        end
+    end
+
+    print('Non-listed players in server: ' .. nonListedCount)
+
+    while true do
+        if nonListedCount > 10 then
+            print('More than 10 non-listed players, finding less populated server')
+
+            local success, result = pcall(function()
+                local Http = game:GetService("HttpService")
+                local TPS = game:GetService("TeleportService")
+                local Api = "https://games.roblox.com/v1/games/"
+
+                local _place = game.PlaceId
+                local _servers = Api .. _place .. "/servers/Public?sortOrder=Asc&limit=100"
+                function ListServers(cursor)
+                    local Raw = game:HttpGet(_servers .. ((cursor and "&cursor=" .. cursor) or ""))
+                    return Http:JSONDecode(Raw)
+                end
+
+                local Server, Next; repeat
+                    local Servers = ListServers(Next)
+                    Server = Servers.data[1]
+                    Next = Servers.nextPageCursor
+                until Server
+
+                TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
+            end)
+            if not success then
+                warn('Error teleporting to less populated server: ' .. tostring(result))
+                wait(5)
+            else
+                break
+            end
+        else
+            print('Server has 10 or fewer non-listed players, staying in current server')
+            break
+        end
+        wait(1)
+    end
+end
+
+-- ===== TRADING FUNCTIONS =====
+local function GetTradePartnerName()
+    local success, partnerName = pcall(function()
+        local userName = LocalPlayer.PlayerGui.TradeGui.ContainerFrame.Theirs.DisplayNameLabel.UserNameLabel.Text
+        if userName:sub(1, 1) == '@' then
+            userName = userName:sub(2)
+        end
+        return userName
+    end)
+    if success and partnerName and partnerName ~= "" then
+        print("Found trade partner: " .. partnerName)
+        return partnerName
+    end
+    return nil
+end
+
+local function AddShoomsToTrade(amount, receiverName)
+    local tradeUIName = GetTradePartnerName()
+    if tradeUIName then
+        receiverName = tradeUIName
+    end
+
+    local receiver = Players:FindFirstChild(receiverName)
+    if not receiver then
+        print("Error: Receiver " .. tostring(receiverName) .. " not found")
+        return false
+    end
+
+    local success = pcall(function()
+        local args = {
+            "AddTradeItem",
+            {
+                Overwrite = true,
+                ItemType = "Currency",
+                Name = "Shooms",
+                Amount = amount
+            }
+        }
+        local remoteName = LocalPlayer.Name .. "-" .. receiverName .. "TradeRemote"
+        ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(remoteName):InvokeServer(unpack(args))
+    end)
+
+    if success then
+        print("Added " .. amount .. " Shooms to trade with " .. receiverName)
+        pcall(function()
+            local acceptButton = LocalPlayer.PlayerGui.TradeGui.ContainerFrame.AcceptButton.UpperLabel
+            Clicked_Ui(acceptButton)
+            task.wait(0.2)
+            Click_NOW()
+            print("Clicked Accept button")
+        end)
+        return true
+    else
+        print("Failed to add Shooms to trade")
+        return false
+    end
+end
+
+local function addTokensToTrade(amount, receiverName)
+    amount = amount or 1
+    if amount < 1 then
+        print("Token amount must be at least 1")
+        return false
+    end
+
+    local tradeUIName = GetTradePartnerName()
+    if tradeUIName then
+        receiverName = tradeUIName
+    end
+
+    local receiver = Players:FindFirstChild(receiverName)
+    if not receiver then
+        print("Error: Receiver " .. tostring(receiverName) .. " not found for token trade")
+        return false
+    end
+
+    local localPlayerName = LocalPlayer.Name
+    local success = true
+    for _, tokenName in ipairs(tokenList) do
+        print("Adding token: " .. tokenName)
+
+        local tokenSuccess = pcall(function()
+            local args = {
+                "AddTradeItem",
+                {
+                    Overwrite = true,
+                    ItemType = "Tokens",
+                    Name = tokenName,
+                    Amount = amount
+                }
+            }
+            local remoteName = localPlayerName .. "-" .. receiverName .. "TradeRemote"
+            ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(remoteName):InvokeServer(unpack(args))
+        end)
+
+        if not tokenSuccess then
+            print("Failed to add token: " .. tokenName)
+            success = false
+        end
+
+        print("Waiting 3 seconds before next token...")
+        task.wait(3)
+    end
+
+    if success then
+        print("Added " .. #tokenList .. " tokens to trade with " .. receiverName)
+        return true
+    else
+        print("Some tokens failed to add to trade")
+        return false
+    end
+end
+
+local function addCreatureToTrade(amount, receiverName)
+    amount = amount or 1
+    if amount < 1 then
+        print("Creature amount must be at least 1")
+        return false
+    end
+
+    local tradeUIName = GetTradePartnerName()
+    if tradeUIName then
+        receiverName = tradeUIName
+    end
+
+    local receiver = Players:FindFirstChild(receiverName)
+    if not receiver then
+        print("Error: Receiver " .. tostring(receiverName) .. " not found for creature trade")
+        return false
+    end
+
+    local localPlayerName = LocalPlayer.Name
+
+    local unlocks = LocalPlayer:FindFirstChild("Data") and LocalPlayer.Data:FindFirstChild("Unlocks")
+    if not unlocks then
+        print("Unlocks data not found")
+        return false
+    end
+
+    local availableCreatures = {}
+    for _, child in ipairs(unlocks:GetChildren()) do
+        if child:IsA("IntValue") or child:IsA("NumberValue") then
+            if child.Value > 0 and child.Name ~= "Vin'rou" then
+                table.insert(availableCreatures, child.Name)
+            end
+        end
+    end
+
+    if #availableCreatures == 0 then
+        print("No available creatures with Value > 0")
+        return false
+    end
+
+    local randomIndex = math.random(1, #availableCreatures)
+    local selectedCreature = availableCreatures[randomIndex]
+
+    print("Waiting 3 seconds before adding creature...")
+    task.wait(3)
+
+    print("Adding creature: " .. selectedCreature)
+    local success = pcall(function()
+        local args = {
+            "AddTradeItem",
+            {
+                Overwrite = true,
+                ItemType = "Creatures",
+                Name = selectedCreature,
+                Amount = amount
+            }
+        }
+        local remoteName = localPlayerName .. "-" .. receiverName .. "TradeRemote"
+        ReplicatedStorage:WaitForChild("Remotes"):WaitForChild(remoteName):InvokeServer(unpack(args))
+    end)
+
+    if success then
+        print("Added creature " .. selectedCreature .. " to trade with " .. receiverName)
+        return true
+    else
+        print("Failed to add creature to trade")
+        return false
+    end
+end
+
+local function CancelTrade()
+    pcall(function()
+        local cancelButton = LocalPlayer.PlayerGui.TradeGui.ContainerFrame.CancelButton.UpperLabel
+        Clicked_Ui(cancelButton)
+        task.wait(0.2)
+        Click_NOW()
+        print("Clicked Cancel button")
+    end)
+    task.wait(2)
+end
+
+-- ===== TRADING LOGIC =====
+local function FindValidReceiver()
+    print("Searching for available trade partners...")
+
+    -- First, try to find available receivers
+    local validReceivers = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if IsInList(player.Name, RECEIVER_LIST) then
+            local isAvailable = false
+            local tradingValue = nil
+            pcall(function()
+                tradingValue = player.Settings.Trading.Value
+                -- false = ว่าง, true = ไม่ว่าง
+                isAvailable = (tradingValue == false)
+            end)
+
+            if isAvailable then
+                print("✅ Found available receiver: " ..
+                    player.Name .. " (Trading.Value = " .. tostring(tradingValue) .. ")")
+                table.insert(validReceivers, player)
+            else
+                print("❌ Receiver " ..
+                    player.Name .. " is busy trading (Trading.Value = " .. tostring(tradingValue) .. ")")
+            end
+        end
+    end
+
+    -- If receivers are available, return one
+    if #validReceivers > 0 then
+        local selected = validReceivers[math.random(1, #validReceivers)]
+        print("🎯 Selected receiver: " .. selected.Name)
+        return selected
+    end
+
+    -- If no receivers available, try to find other available senders
+    print("No receivers available, looking for available senders...")
+    local validSenders = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if IsInList(player.Name, SENDER_LIST) and player.Name ~= LocalPlayer.Name then
+            local isAvailable = false
+            local tradingValue = nil
+            pcall(function()
+                tradingValue = player.Settings.Trading.Value
+                -- false = ว่าง, true = ไม่ว่าง
+                isAvailable = (tradingValue == false)
+            end)
+
+            if isAvailable then
+                print("✅ Found available sender: " ..
+                    player.Name .. " (Trading.Value = " .. tostring(tradingValue) .. ")")
+                table.insert(validSenders, player)
+            else
+                print("❌ Sender " .. player.Name .. " is busy trading (Trading.Value = " .. tostring(tradingValue) .. ")")
+            end
+        end
+    end
+
+    if #validSenders > 0 then
+        local selected = validSenders[math.random(1, #validSenders)]
+        print("🎯 Selected sender to trade with: " .. selected.Name)
+        return selected
+    end
+
+    print("❌ No available trade partners found")
+    return nil
+end
+
+local function SenderRoutine()
+    if not IsInList(LocalPlayer.Name, SENDER_LIST) then
+        print("Not in sender list, exiting")
+        return false
+    end
+
+    print("Running as sender: " .. LocalPlayer.Name)
+    local totalShooms = LocalPlayer.Data.Coins.Value
+    if totalShooms <= 20 then
+        print("Shooms <= 20 (" .. totalShooms .. "). Shutting down immediately.")
+        game:Shutdown()
+        return false
+    end
+
+    -- Continue trading until we have only 20 Shooms left
+    while true do
+        local currentShooms = LocalPlayer.Data.Coins.Value
+        if currentShooms <= 20 then
+            print("Reached minimum Shooms (" .. currentShooms .. "). Stopping trades and shutting down.")
+            game:Shutdown()
+            return true
+        end
+
+        -- Check if we have enough to trade (more than 20)
+        local availableToTrade = currentShooms - 20
+        if availableToTrade <= 0 then
+            print("No more Shooms available to trade. Shutting down.")
+            game:Shutdown()
+            return true
+        end
+
+        -- Check for incoming trade requests from other senders first
+        local requestsFrame = LocalPlayer.PlayerGui.RequestsGui.RequestsFrame.Other
+        local foundIncomingRequest = false
+
+        for _, child in pairs(requestsFrame:GetChildren()) do
+            if child.Name:sub(1, 5) == "Trade" then
+                local senderName = child.Name:sub(6)
+                if IsInList(senderName, SENDER_LIST) and senderName ~= LocalPlayer.Name then
+                    foundIncomingRequest = true
+                    print("🔔 Found incoming trade request from sender: " ..
+                        senderName .. ". Accepting as temporary receiver...")
+
+                    pcall(function()
+                        local acceptButton = child.AcceptButton.UpperLabel
+                        Clicked_Ui(acceptButton)
+                        task.wait(0.2)
+                        Click_NOW()
+                        print("✅ Accepted trade request from " .. senderName)
+                    end)
+
+                    -- Wait for trade GUI to open
+                    local startTime = tick()
+                    local tradeGuiOpened = false
+                    while tick() - startTime < 10 do
+                        if LocalPlayer.PlayerGui.TradeGui.Enabled then
+                            tradeGuiOpened = true
+                            break
+                        end
+                        task.wait(0.5)
+                    end
+
+                    if tradeGuiOpened then
+                        print("🔄 Acting as temporary receiver for " .. senderName)
+
+                        -- Add a creature as receiver
+                        local success = false
+                        local unlocks = LocalPlayer:FindFirstChild("Data") and LocalPlayer.Data:FindFirstChild("Unlocks")
+                        if unlocks then
+                            local availableCreatures = {}
+                            for _, child in ipairs(unlocks:GetChildren()) do
+                                if child:IsA("IntValue") or child:IsA("NumberValue") then
+                                    if child.Value > 0 and child.Name ~= "Vin'rou" then
+                                        table.insert(availableCreatures, child.Name)
+                                    end
+                                end
+                            end
+
+                            if #availableCreatures > 0 then
+                                local randomIndex = math.random(1, #availableCreatures)
+                                local selectedCreature = availableCreatures[randomIndex]
+
+                                print("Adding creature as temporary receiver: " .. selectedCreature)
+
+                                local remoteName1 = senderName .. "-" .. LocalPlayer.Name .. "TradeRemote"
+                                local remoteName2 = LocalPlayer.Name .. "-" .. senderName .. "TradeRemote"
+                                local remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+                                local args = {
+                                    "AddTradeItem",
+                                    {
+                                        Overwrite = true,
+                                        ItemType = "Creatures",
+                                        Name = selectedCreature,
+                                        Amount = 1
+                                    }
+                                }
+
+                                local remote1 = remotes:FindFirstChild(remoteName1)
+                                if remote1 then
+                                    local success1 = pcall(function()
+                                        remote1:InvokeServer(unpack(args))
+                                    end)
+                                    if success1 then
+                                        print("Successfully sent to remote: " .. remoteName1)
+                                        success = true
+                                    end
+                                end
+
+                                local remote2 = remotes:FindFirstChild(remoteName2)
+                                if remote2 then
+                                    local success2 = pcall(function()
+                                        remote2:InvokeServer(unpack(args))
+                                    end)
+                                    if success2 then
+                                        print("Successfully sent to remote: " .. remoteName2)
+                                        success = true
+                                    end
+                                end
+                            end
+                        end
+
+                        task.wait(3)
+
+                        -- Accept the trade
+                        pcall(function()
+                            local acceptButton = LocalPlayer.PlayerGui.TradeGui.ContainerFrame.AcceptButton.UpperLabel
+                            Clicked_Ui(acceptButton)
+                            task.wait(0.2)
+                            Click_NOW()
+                            print("Clicked Accept button as temporary receiver")
+                        end)
+
+                        -- Wait for trade to complete
+                        local initialCoins = LocalPlayer.Data.Coins.Value
+                        while LocalPlayer.PlayerGui.TradeGui.Enabled do
+                            pcall(function()
+                                local acceptButton = LocalPlayer.PlayerGui.TradeGui.ContainerFrame.AcceptButton
+                                    .UpperLabel
+                                Clicked_Ui(acceptButton)
+                                task.wait(0.2)
+                                Click_NOW()
+                            end)
+                            task.wait(2)
+                        end
+
+                        if LocalPlayer.Data.Coins.Value > initialCoins then
+                            print("✅ Trade successful as temporary receiver! Received Shooms from " .. senderName)
+
+                            local totalShooms = LocalPlayer.Data.Coins.Value
+                            if totalShooms <= 20 then
+                                print("Shooms <= 20 (" ..
+                                    totalShooms .. ") after receiving trade. Shutting down immediately.")
+                                game:Shutdown()
+                                return true
+                            end
+                        end
+
+                        print("🔄 Returning to sender mode...")
+                        task.wait(2)
+                        break -- Exit the request checking loop and continue as sender
+                    else
+                        print("❌ Trade window failed to open for incoming request")
+                    end
+                    break
+                end
+            end
+        end
+
+        -- If we handled an incoming request, continue the main loop
+        if foundIncomingRequest then
+            continue
+        end
+
+        local receiver = FindValidReceiver()
+        if not receiver then
+            print("No valid receiver found, waiting 5 seconds before retry...")
+            task.wait(5)
+            continue
+        end
+
+        -- Double check if the selected receiver is still available before proceeding
+        local isStillAvailable = false
+        pcall(function()
+            isStillAvailable = (receiver.Settings.Trading.Value == false)
+        end)
+
+        if not isStillAvailable then
+            print("Selected receiver " ..
+                receiver.Name ..
+                " is no longer available (Trading.Value = " ..
+                tostring(receiver.Settings.Trading.Value) .. "). Finding another...")
+            task.wait(1)
+            continue
+        end
+
+        print("Confirmed receiver " ..
+            receiver.Name ..
+            " is available (Trading.Value = " ..
+            tostring(receiver.Settings.Trading.Value) .. "). Proceeding with trade...")
+
+        -- ...existing code for normal trading...
+        local tradeButtonClicked = false
+        local startTime = tick()
+        while tick() - startTime < 5 do
+            -- Check one more time before clicking trade button
+            local isStillAvailable = false
+            pcall(function()
+                isStillAvailable = (receiver.Settings.Trading.Value == false)
+            end)
+
+            if not isStillAvailable then
+                print("Receiver " ..
+                    receiver.Name ..
+                    " became unavailable while trying to trade (Trading.Value = " ..
+                    tostring(receiver.Settings.Trading.Value) .. "). Aborting trade attempt.")
+                break
+            end
+
+            local success = pcall(function()
+                local tradeButton = LocalPlayer.PlayerGui.TradeHUDGui.BottomFrame.ButtonsFrame.Trade.UpperLabel
+                Clicked_Ui(tradeButton)
+                task.wait(0.2)
+                Click_NOW()
+                tradeButtonClicked = true
+            end)
+            if tradeButtonClicked then break end
+            task.wait(0.5)
+        end
+
+        if not tradeButtonClicked then
+            print("Trade button not found or receiver became unavailable")
+            task.wait(2)
+            continue
+        end
+
+        task.wait(1)
+
+        -- Final check before clicking receiver's trade button
+        local isStillAvailable = false
+        pcall(function()
+            isStillAvailable = (receiver.Settings.Trading.Value == false)
+        end)
+
+        if not isStillAvailable then
+            print("Receiver " ..
+                receiver.Name ..
+                " became unavailable before trade request (Trading.Value = " ..
+                tostring(receiver.Settings.Trading.Value) .. "). Closing players GUI and retrying...")
+            pcall(function()
+                local closeButton = LocalPlayer.PlayerGui.PlayersGui.ContainerFrame.CloseButton.UpperLabel
+                Clicked_Ui(closeButton)
+                task.wait(0.2)
+                Click_NOW()
+                print("Closed PlayersGui due to receiver unavailability")
+            end)
+            task.wait(2)
+            continue
+        end
+
+        local receiverButtonClicked = false
+        startTime = tick()
+        while tick() - startTime < 5 do
+            -- One final check before sending trade request
+            local isStillAvailable = false
+            pcall(function()
+                isStillAvailable = (receiver.Settings.Trading.Value == false)
+            end)
+
+            if not isStillAvailable then
+                print("Receiver " ..
+                    receiver.Name ..
+                    " became unavailable just before trade request (Trading.Value = " ..
+                    tostring(receiver.Settings.Trading.Value) .. "). Aborting...")
+                break
+            end
+
+            local success = pcall(function()
+                local receiverTradeButton = LocalPlayer.PlayerGui.PlayersGui.ContainerFrame.PlayersFrame[receiver.Name]
+                    .InnerFrame.ButtonsFrame.TradeButton.UpperLabel
+                Clicked_Ui(receiverTradeButton)
+                task.wait(0.2)
+                Click_NOW()
+                receiverButtonClicked = true
+                print("Successfully sent trade request to " .. receiver.Name)
+            end)
+            if receiverButtonClicked then break end
+            task.wait(0.5)
+        end
+
+        if not receiverButtonClicked then
+            print("Receiver's trade button not found or receiver became unavailable")
+            pcall(function()
+                local closeButton = LocalPlayer.PlayerGui.PlayersGui.ContainerFrame.CloseButton.UpperLabel
+                Clicked_Ui(closeButton)
+                task.wait(0.2)
+                Click_NOW()
+                print("Closed PlayersGui")
+            end)
+            task.wait(2)
+            continue
+        end
+
+        startTime = tick()
+        local tradeGuiOpened = false
+        while tick() - startTime < 10 do
+            if LocalPlayer.PlayerGui.TradeGui.Enabled then
+                tradeGuiOpened = true
+                break
+            end
+            task.wait(0.5)
+        end
+
+        if not tradeGuiOpened then
+            print("Trade window didn't open within 10 seconds")
+            pcall(function()
+                local closeButton = LocalPlayer.PlayerGui.PlayersGui.ContainerFrame.CloseButton.UpperLabel
+                Clicked_Ui(closeButton)
+                task.wait(0.2)
+                Click_NOW()
+                print("Clicked Close button on PlayersGui")
+            end)
+            task.wait(1)
+            continue
+        end
+
+        local currentShooms = LocalPlayer.Data.Coins.Value
+        local amountToTrade
+
+        if currentShooms <= 20 then
+            print("Already at minimum Shooms (" .. currentShooms .. "). Stopping trades.")
+            break
+        end
+
+        -- Calculate amount to trade with maximum limit of 500,000 per trade
+        local maxTradeAmount = 500000
+        local availableAmount = currentShooms - 20 -- Keep 20 Shooms
+
+        if availableAmount <= 0 then
+            print("No Shooms available to trade while keeping 20. Stopping.")
+            break
+        end
+
+        amountToTrade = math.min(availableAmount, maxTradeAmount)
+
+        print("Trading " .. amountToTrade .. " Shooms (max per trade: " .. maxTradeAmount .. ")")
+        print("Current Shooms: " ..
+            currentShooms .. " -> Will have: " .. (currentShooms - amountToTrade) .. " after trade")
+
+        print("Adding tokens and a creature")
+
+        if addTokensToTrade(150, receiver.Name) then
+            print("Successfully added tokens to trade")
+        else
+            print("Failed to add tokens, but continuing with trade")
+        end
+
+        if addCreatureToTrade(1, receiver.Name) then
+            print("Successfully added a creature to trade")
+        else
+            print("Failed to add creature, but continuing with trade")
+        end
+
+        task.wait(1)
+
+        if not AddShoomsToTrade(amountToTrade, receiver.Name) then
+            print("Failed to add Shooms, cancelling")
+            CancelTrade()
+            task.wait(2)
+            continue
+        end
+
+        startTime = tick()
+        local initialCoins = currentShooms
+        local tradeCompleted = false
+        while tick() - startTime < 60 do
+            if not LocalPlayer.PlayerGui.TradeGui.Enabled then
+                if LocalPlayer.Data.Coins.Value < initialCoins then
+                    tradeCompleted = true
+                    print("Trade successful! Coins reduced from " ..
+                        initialCoins .. " to " .. LocalPlayer.Data.Coins.Value)
+                end
+                break
+            end
+            task.wait(1)
+        end
+
+        if LocalPlayer.PlayerGui.TradeGui.Enabled then
+            print("Trade timed out after 60 seconds, cancelling")
+            CancelTrade()
+            task.wait(2)
+            continue
+        end
+
+        if tradeCompleted then
+            print("Trade completed successfully!")
+
+            local remainingShooms = LocalPlayer.Data.Coins.Value
+            print("Remaining Shooms: " .. remainingShooms)
+
+            if remainingShooms <= 20 then
+                print("Reached target minimum of 20 Shooms. Mission completed! Shutting down.")
+                game:Shutdown()
+                return true
+            else
+                print("Still have " .. (remainingShooms - 20) .. " Shooms to trade. Continuing...")
+            end
+        else
+            print("Trade failed or was cancelled")
+        end
+
+        task.wait(2)
+    end
+
+    print("All trading completed!")
+    print("Final Shooms: " .. LocalPlayer.Data.Coins.Value)
+
+    VirtualInputManager:SendKeyEvent(true, 220, false, game)
+    task.wait(0.1)
+    VirtualInputManager:SendKeyEvent(false, 220, false, game)
+
+    print("Trading completed. Closing Roblox in 5 seconds...")
+    task.wait(5)
+    game:Shutdown()
+
+    return true
+end
+
+local function ReceiverRoutine()
+    if not IsInList(LocalPlayer.Name, RECEIVER_LIST) then
+        print("Not in receiver list, exiting")
+        return false
+    end
+
+    print("Running as receiver: " .. LocalPlayer.Name)
+
+    local currentShooms = LocalPlayer.Data.Coins.Value
+    if currentShooms <= 20 then
+        print("Shooms <= 20 (" .. currentShooms .. ") at start. Shutting down immediately.")
+        game:Shutdown()
+        return false
+    end
+
+    local requestsFrame = LocalPlayer.PlayerGui.RequestsGui.RequestsFrame.Other
+
+    while true do
+        local foundRequest = false
+        for _, child in pairs(requestsFrame:GetChildren()) do
+            if child.Name:sub(1, 5) == "Trade" then
+                local senderName = child.Name:sub(6)
+                if IsInList(senderName, SENDER_LIST) then
+                    foundRequest = true
+                    print("Found trade request from: " .. senderName)
+
+                    pcall(function()
+                        local acceptButton = child.AcceptButton.UpperLabel
+                        Clicked_Ui(acceptButton)
+                        task.wait(0.2)
+                        Click_NOW()
+                        print("Accepted trade request")
+                    end)
+
+                    local startTime = tick()
+                    local tradeGuiOpened = false
+                    while tick() - startTime < 5 do
+                        if LocalPlayer.PlayerGui.TradeGui.Enabled then
+                            tradeGuiOpened = true
+                            break
+                        end
+                        task.wait(0.5)
+                    end
+
+                    if tradeGuiOpened then
+                        print("Adding a creature from receiver to sender")
+
+                        local success = false
+                        local unlocks = LocalPlayer:FindFirstChild("Data") and LocalPlayer.Data:FindFirstChild("Unlocks")
+                        if unlocks then
+                            local availableCreatures = {}
+                            for _, child in ipairs(unlocks:GetChildren()) do
+                                if child:IsA("IntValue") or child:IsA("NumberValue") then
+                                    if child.Value > 0 and child.Name ~= "Vin'rou" then
+                                        table.insert(availableCreatures, child.Name)
+                                    end
+                                end
+                            end
+
+                            if #availableCreatures > 0 then
+                                local randomIndex = math.random(1, #availableCreatures)
+                                local selectedCreature = availableCreatures[randomIndex]
+
+                                print("Adding creature: " .. selectedCreature)
+
+                                local remoteName1 = senderName .. "-" .. LocalPlayer.Name .. "TradeRemote"
+                                local remoteName2 = LocalPlayer.Name .. "-" .. senderName .. "TradeRemote"
+                                local remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+                                local args = {
+                                    "AddTradeItem",
+                                    {
+                                        Overwrite = true,
+                                        ItemType = "Creatures",
+                                        Name = selectedCreature,
+                                        Amount = 1
+                                    }
+                                }
+
+                                local remote1 = remotes:FindFirstChild(remoteName1)
+                                if remote1 then
+                                    local success1 = pcall(function()
+                                        remote1:InvokeServer(unpack(args))
+                                    end)
+                                    if success1 then
+                                        print("Successfully sent to remote: " .. remoteName1)
+                                        success = true
+                                    else
+                                        print("Failed to send to remote: " .. remoteName1)
+                                    end
+                                else
+                                    print("Remote not found: " .. remoteName1)
+                                end
+
+                                local remote2 = remotes:FindFirstChild(remoteName2)
+                                if remote2 then
+                                    local success2 = pcall(function()
+                                        remote2:InvokeServer(unpack(args))
+                                    end)
+                                    if success2 then
+                                        print("Successfully sent to remote: " .. remoteName2)
+                                        success = true
+                                    else
+                                        print("Failed to send to remote: " .. remoteName2)
+                                    end
+                                else
+                                    print("Remote not found: " .. remoteName2)
+                                end
+
+                                if success then
+                                    print("Successfully added creature " .. selectedCreature .. " to trade as receiver")
+                                else
+                                    print("Failed to add creature as receiver, but continuing with trade")
+                                end
+                            else
+                                print("No available creatures with Value > 0")
+                            end
+                        else
+                            print("Unlocks data not found")
+                        end
+
+                        task.wait(3)
+
+                        pcall(function()
+                            local acceptButton = LocalPlayer.PlayerGui.TradeGui.ContainerFrame.AcceptButton.UpperLabel
+                            Clicked_Ui(acceptButton)
+                            task.wait(0.2)
+                            Click_NOW()
+                            print("Clicked Accept button in trade GUI")
+                        end)
+
+                        local initialCoins = LocalPlayer.Data.Coins.Value
+                        while LocalPlayer.PlayerGui.TradeGui.Enabled do
+                            pcall(function()
+                                local acceptButton = LocalPlayer.PlayerGui.TradeGui.ContainerFrame.AcceptButton
+                                    .UpperLabel
+                                Clicked_Ui(acceptButton)
+                                task.wait(0.2)
+                                Click_NOW()
+                            end)
+                            task.wait(2)
+                        end
+
+                        if LocalPlayer.Data.Coins.Value > initialCoins then
+                            print("Trade successful! Received Shooms from " .. senderName)
+
+                            local totalShooms = LocalPlayer.Data.Coins.Value
+                            if totalShooms <= 20 then
+                                print("Shooms <= 20 (" ..
+                                    totalShooms .. ") after receiving trade. Shutting down immediately.")
+                                game:Shutdown()
+                                return false
+                            end
+                        else
+                            print("Trade completed or cancelled")
+                        end
+                    else
+                        print("Trade window failed to open")
+                    end
+                    break
+                end
+            end
+        end
+
+        if not foundRequest then
+            print("No valid trade requests found")
+
+            local currentShooms = LocalPlayer.Data.Coins.Value
+            if currentShooms <= 20 then
+                print("Shooms <= 20 (" .. currentShooms .. ") during waiting. Shutting down immediately.")
+                game:Shutdown()
+                return false
+            end
+        end
+        task.wait(1)
+    end
+    return true
+end
+
+-- ===== MONITOR & AUTO SWITCH SERVER =====
+local function MonitorAndAutoSwitchServer(sender_list, receiver_list)
+    task.spawn(function()
+        while true do
+            local playersInServer = Players:GetPlayers()
+            local nonListedCount = 0
+            for _, player in ipairs(playersInServer) do
+                local isListed = false
+                for _, sender in ipairs(sender_list) do
+                    if player.Name:lower() == sender:lower() then
+                        isListed = true
+                        break
+                    end
+                end
+                for _, receiver in ipairs(receiver_list) do
+                    if player.Name:lower() == receiver:lower() then
+                        isListed = true
+                        break
+                    end
+                end
+                if not isListed then
+                    nonListedCount = nonListedCount + 1
+                end
+            end
+            print('[MONITOR] Non-listed players in server: ' .. nonListedCount)
+            if nonListedCount > 10 then
+                print('[MONITOR] More than 10 non-listed players, finding less populated server')
+                local success, result = pcall(function()
+                    local Http = game:GetService("HttpService")
+                    local TPS = game:GetService("TeleportService")
+                    local Api = "https://games.roblox.com/v1/games/"
+                    local _place = game.PlaceId
+                    local _servers = Api .. _place .. "/servers/Public?sortOrder=Asc&limit=100"
+                    function ListServers(cursor)
+                        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor=" .. cursor) or ""))
+                        return Http:JSONDecode(Raw)
+                    end
+
+                    local Server, Next; repeat
+                        local Servers = ListServers(Next)
+                        Server = Servers.data[1]
+                        Next = Servers.nextPageCursor
+                    until Server
+                    TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
+                end)
+                if not success then
+                    warn('[MONITOR] Error teleporting to less populated server: ' .. tostring(result))
+                    wait(5)
+                else
+                    break -- หลังจากย้ายเซิร์ฟเวอร์ ให้จบลูปนี้ (จะรีเซ็ตใหม่หลังโหลดใหม่)
+                end
+            end
+            wait(5) -- เช็คทุก 5 วินาที
+        end
+    end)
+end
+
+-- ===== MAIN ENTRY POINT =====
+-- เรียก MonitorAndAutoSwitchServer แยก thread
+MonitorAndAutoSwitchServer(SENDER_LIST, RECEIVER_LIST)
+
+-- ===== MAIN EXECUTION FUNCTIONS =====
+local function DetermineRole()
+    local isSender = false
+    local isReceiver = false
+
+    for _, sender in ipairs(SENDER_LIST) do
+        if LocalPlayer.Name:lower() == sender:lower() then
+            isSender = true
+            break
+        end
+    end
+
+    for _, receiver in ipairs(RECEIVER_LIST) do
+        if LocalPlayer.Name:lower() == receiver:lower() then
+            isReceiver = true
+            break
+        end
+    end
+
+    if isSender then
+        print('LocalPlayer is a sender')
+        return "sender"
+    elseif isReceiver then
+        print('LocalPlayer is a receiver')
+        return "receiver"
+    else
+        warn('LocalPlayer is neither in SENDER_LIST nor RECEIVER_LIST')
+        return "none"
+    end
+end
+
+local function JoinPhase()
+    local role = DetermineRole()
+
+    if role == "sender" then
+        print('Running autojointrade for sender')
+        autojointrade(RECEIVER_LIST) -- Senders target receivers
+    elseif role == "receiver" then
+        print('Running autojointrade_receiver for receiver')
+        autojointrade_receiver(SENDER_LIST, RECEIVER_LIST)
+    else
+        print('Player not in any list, skipping join phase')
+        return false
+    end
+
+    return true
+end
+
+local function TradePhase()
+    local role = DetermineRole()
+
+    if role == "sender" then
+        print("Detected role: Sender - Starting trading")
+        return SenderRoutine()
+    elseif role == "receiver" then
+        print("Detected role: Receiver - Starting trading")
+        return ReceiverRoutine()
+    else
+        print("Not in any list - trading phase ended")
+        return false
+    end
+end
+
+local function AutoTradeLoop()
+    print("Combined Script started")
+    while true do
+        local success, shouldContinue = pcall(TradePhase)
+        if not success or not shouldContinue then
+            print("Script stopping: " .. (success and "Completed" or tostring(shouldContinue)))
+            break
+        end
+        print("Waiting 10 seconds before next cycle")
+        wait(10)
+        pcall(function()
+            VirtualInputManager:SendKeyEvent(true, 27, false, game)  -- Press Escape
+            task.wait(0.1)
+            VirtualInputManager:SendKeyEvent(false, 27, false, game) -- Release Escape
+        end)
+    end
+end
+
+local function CheckPlaceIdAndExecute()
+    local TARGET_PLACE_ID = 14119723130
+    local LOBBY_PLACE_ID = 5233782396
+
+    if game.PlaceId == LOBBY_PLACE_ID then
+        print("In lobby (" .. LOBBY_PLACE_ID .. "). Running join phase.")
+        JoinPhase()
+    elseif game.PlaceId == TARGET_PLACE_ID then
+        print("Place ID matched: " .. TARGET_PLACE_ID .. ". Starting trade phase after 15 seconds.")
+        task.wait(15) -- Wait 15 seconds as in original trade script
+        spawn(AutoTradeLoop)
+    else
+        print("Place ID " .. game.PlaceId .. " not supported. Script will not run.")
+    end
+end
+
+-- ===== SCRIPT EXECUTION =====
+CheckPlaceIdAndExecute()
