@@ -2,41 +2,9 @@
 -- This script combines auto-joining functionality with auto-trading
 
 -- ===== SHARED PLAYER LISTS =====
-local SENDER_LIST = { 'OmiorsoFilus', 'OtinouseaRer', 'HantingaThen', 'EntaredoRore', 'UtindowoNera', 'RoresoweDint',
-    'OneroustiNdi', 'UntongoTaton', 'EnditouTeati', 'RuseditoNsin', 'TisedisiNgen', 'SongiteaNtea', 'LintouriShen',
-    'RearimpuTeat', 'EsongathuTan', 'TedingeNdeng', 'OflousoMenca', 'OneratiMouro', 'EroutorouNer', 'DintoreDeron',
-    'IndendoMondu', 'EsimenteRero', 'NantenteDend', 'EroundaTousi', 'AllatereNdot', 'OfofishaSath', 'UrendereNdas',
-    'YusatriSindu', 'OfousheRteng', 'HeshofeSesed', 'EngandeaTeat', 'UstofofaNera', 'EndederiNgat', 'OringateRise',
-    'OxperendeSof', 'AngondouLout', 'IsateseRista', 'DarisereSero', 'PistomiCompe', 'ItinoteDrato', 'OreshusouLil',
-    'EndouroReror', 'HateritoNden', 'EntofriTores', 'OfoutofeDomi', 'OredintiScal', 'InengitoFang', 'EssicheSidri',
-    'EserarsuNdon', 'TunduteDenge', 'AteshereNdes', 'EnoriofruLyi', 'YicariseDsed', 'OntouneDesic', 'EnediteRilal',
-    'ErangeseNtor', 'EnderonoNdie', 'OmearesiLire', 'EntingoNtito', 'FeditintoRor', 'UstaneriCout', 'ErinedaNtene',
-    'OreresaLiten', 'RouneneNered', 'ImashurieLli', 'NatonoreNdin', 'UsedoreRerer', 'ErontengeDen', 'EdedaneDindi',
-    'OntararseaRe', 'DeneditoMmis', 'UtestendeSat', 'AbundowouShu', 'AnerereRatou', 'OwiteraDadea', 'IseroraThito',
-    'SereditheRof', 'EntintiTonte', 'AnditireRist', 'HerongoNgeri', 'TeditedeSese', 'TeatheseSent', 'ZeneariSarer',
-    'TorarangeNde', 'TandingiStes', 'NandouraNtou', 'EratoneNgare', 'RoroustiNtor', 'IchathiCeses', 'ErorariNtear',
-    'ResesuthoRat', 'IteroriLeded', 'EngilioLfeds', 'AtendestoFat', 'IlonongeRara', 'ErangasteRas', 'UlofiseNteri',
-    'LisatongeDas', 'IlenedsiThou', 'EngaratouTou', 'DeddistaRsor', 'SicantiConde', 'FistithoRofe', 'HerimedsiTha',
-    'AtondingeRen', 'RofrofriNder', 'OmpusoriNofi', 'UthisatheDis', 'EdeasedouRdu', 'NutonediNgon', 'UntutentoFan',
-    'EsorendaNgan', 'IsteristeRer', 'AdimowhiNgad', 'EdrunichaSha', 'IstasoraRero', 'EristaroRilo', 'CerofentoFes',
-    'OresedouThed', 'UthatoroRend', 'EritesioLlou', 'EsounomeNdun', 'AritowoFiont', 'RoforseDorse', 'EnedileDomio',
-    'AtengendiSen', 'SoromeraLala', 'OntisteRofus', 'EfondintouRi', 'OringoreRine', 'OndorouNeder', 'RofarereDoul',
-    'LendisiTinti', 'EroroundaTha', 'EstoureSende', 'UringereNton', 'IsoniteaRnou', 'AndiusoRinde', 'PintadioResi',
-    'TedalomaSear', 'LofoureDinge', 'InedendeReng', 'RateditheRer', 'EdofoureNgon', 'EserareNouse', 'IlesofaTofan',
-    'AngindoRerin', 'NentateRaron', 'AtofedaNdane',
-    'ItearanoRori', 'HuseresaSter', 'OthitomeRend', 'AnonoraLedis', 'OroneroRisen', 'AtenestoRash', 'IsheratiTofr',
-    'SomorengouNt', 'NathineNtila', 'NoritouTedou', 'OngonteNgere', 'TengantouRon', 'OrondondiSti', 'ErounteNgeri',
-    'EneroneNdeng', 'OfengondoFis', 'NomamerseSsu', 'HofonguNtath', 'YanortuLdero', 'UlyengoRipes', 'ExideastaDat',
-    'RendendaRede', 'EressoroRous', 'FidsouloFour', 'UsinessuRing', 'IsiowomaShus', 'HadanesoMimi', 'DiofentoFera',
-    'NaneadeRista', 'SorouseNesof', 'UtoryithiNta', 'OrnernoNdino', 'TontisseRedd', 'LiditouLatid', 'EsedgitheSit',
-    'AsistitiNtis', 'DanorseDriti', 'UrtungiSaris', 'UrorangoFast', 'ErisediNgori', 'MandaraRises', 'EstoraneReat',
-    'EmofingiSere', 'EndoreroRisi', 'EntatofaTeal', 'AntendoRound', 'OgorsidreDes', 'LongullaSofe', 'IthandoReror',
-    'ImalistiNoor', 'YaritithiDor', 'EredondeRera', 'LangoutoNdit', 'EndeareaRour', 'AthesichaTes', 'AnindouToust',
-    'HorithiNenti', 'TestoriTesen', 'OneneraRoure', 'SonerindaSis', 'AnerithaThes', 'OmintestiTor', 'UthineroRine',
-    'IsenelaLoull' }
-local RECEIVER_LIST = { 'OllitisoRida', 'DerouriToure', 'SititedoRate', 'HasidedoRest', 'EntorsoNomom', 'AsidissaSass',
-    'RinduteSiond', 'EserontoNtit', 'RisongoRised', 'SedessaSitha', 'PanguseSeror', 'UntoureLluso', 'OraredeSofer',
-    'TiollutiLers' }
+local SENDER_LIST = { 'EserontoNtit', 'DerouriToure', 'PanguseSeror', 'HasidedoRest', 'OraredeSofer', 'UntoureLluso',
+    'AsidissaSass', 'YicariseDsed', 'TiollutiLers', 'PistomiCompe', 'EntorsoNomom', 'OllitisoRida' }
+local RECEIVER_LIST = { 'kumomeow_2' }
 
 -- ===== SERVICES =====
 local Players = game:GetService("Players")
@@ -1462,19 +1430,19 @@ local function checkCurrentPlaceId()
     local currentPlaceId = game.PlaceId
     local targetPlaceId = 5233782396
     local joinPlaceId = 14119723130
-    
+
     print("🔍 Checking PlaceId...")
     print("   Current PlaceId: " .. currentPlaceId)
     print("   Target PlaceId: " .. targetPlaceId)
     print("   Join PlaceId: " .. joinPlaceId)
-    
+
     if currentPlaceId == targetPlaceId then
         print("✅ Found target PlaceId! Ready to auto join...")
         return true
     elseif currentPlaceId == joinPlaceId then
         print("🎯 Already in target join place!")
         _G.hasJoined = true
-        
+
         -- วาร์ปไปยังตำแหน่งที่กำหนดเมื่ออยู่ใน PlaceId 14119723130
         local success, result = pcall(function()
             local player = game.Players.LocalPlayer
@@ -1489,7 +1457,7 @@ local function checkCurrentPlaceId()
         if not success then
             print("❌ Warp failed: " .. tostring(result))
         end
-        
+
         return false
     else
         print("❌ Not in target PlaceId. Waiting...")
@@ -1500,28 +1468,28 @@ end
 -- ฟังก์ชัน auto join
 local function autoJoinToPlace()
     local joinPlaceId = 14119723130
-    
+
     print("🚀 Starting auto join to PlaceId: " .. joinPlaceId)
-    
+
     -- ใช้ TeleportService เพื่อ join เกม
     local TeleportService = game:GetService("TeleportService")
-    
+
     -- ฟังก์ชัน join เกม
     local function joinGame()
         print("🔄 Attempting to join game...")
-        
+
         -- ลอง join เกม
         local success, result = pcall(function()
             TeleportService:Teleport(joinPlaceId)
         end)
-        
+
         if success then
             print("✅ Teleport initiated successfully!")
             _G.hasJoined = true
-            
+
             -- รอให้โหลดเกมเสร็จแล้ววาร์ป
             task.wait(10) -- รอ 10 วินาทีให้เกมโหลดเสร็จ
-            
+
             local warpSuccess, warpResult = pcall(function()
                 local player = game.Players.LocalPlayer
                 local character = player.Character
@@ -1552,7 +1520,7 @@ local function autoJoinToPlace()
             joinGame()
         end
     end
-    
+
     -- เริ่ม join เกม
     joinGame()
 end
@@ -1561,24 +1529,24 @@ end
 local function autoJoinLoop()
     local cycleCount = 0
     local lastCheckTime = 0
-    
+
     print("🔄 Auto Join Loop Started!")
-    
+
     while not _G.shouldStopAutoJoin do
         cycleCount = cycleCount + 1
         local currentTime = tick()
-        
+
         -- เช็คทุก 10 วินาที (ไม่ต้องเช็คบ่อยเกินไป)
         if currentTime - lastCheckTime >= 10 then
             lastCheckTime = currentTime
-            
+
             -- แสดงสถานะทุก 6 รอบ (60 วินาที)
             if cycleCount % 6 == 0 then
                 print("🔄 Auto Join running... Cycle: " .. cycleCount)
                 print("   Current PlaceId: " .. game.PlaceId)
                 print("   Has Joined: " .. tostring(_G.hasJoined))
             end
-            
+
             -- เช็ค placeId ปัจจุบัน
             if checkCurrentPlaceId() then
                 -- ถ้าอยู่ใน placeId เป้าหมายและยังไม่ได้ join
@@ -1588,11 +1556,11 @@ local function autoJoinLoop()
                 end
             end
         end
-        
+
         -- รอก่อนรอบถัดไป
         task.wait(1)
     end
-    
+
     _G.autoJoinRunning = false
     print("🛑 Auto Join Loop stopped after " .. cycleCount .. " cycles")
 end
@@ -1600,7 +1568,7 @@ end
 -- ฟังก์ชันเริ่มต้น
 local function startAutoJoin()
     print("🚀 Auto Join Script Starting...")
-    
+
     -- เช็ค placeId ปัจจุบันก่อน
     if checkCurrentPlaceId() then
         -- ถ้าอยู่ใน placeId เป้าหมายแล้ว ให้ auto join ทันที
@@ -1609,7 +1577,7 @@ local function startAutoJoin()
             autoJoinToPlace()
         end
     end
-    
+
     -- เริ่ม loop ตรวจสอบ
     task.spawn(autoJoinLoop)
 end
@@ -1626,7 +1594,7 @@ local function restartAutoJoin()
         print("⚠️ Auto join already running!")
         return
     end
-    
+
     _G.shouldStopAutoJoin = false
     _G.autoJoinRunning = true
     _G.hasJoined = false
@@ -1644,12 +1612,12 @@ local function getAutoJoinStatus()
         targetPlaceId = 5233782396,
         joinPlaceId = 14119723130
     }
-    
+
     print("📊 Auto Join Status:")
     for key, value in pairs(status) do
         print("   " .. key .. ": " .. tostring(value))
     end
-    
+
     return status
 end
 
@@ -1691,7 +1659,7 @@ _G.warpToPosition = warpToPosition
 task.spawn(function()
     while _G.autoJoinRunning do
         task.wait(30) -- เช็คทุก 30 วินาที
-        
+
         -- ถ้า auto join หยุดโดยไม่ตั้งใจ ให้รีสตาร์ท
         if not _G.shouldStopAutoJoin and not _G.autoJoinRunning then
             print("🔧 Auto join crashed, restarting...")
