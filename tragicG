@@ -129,8 +129,16 @@ local function autojointrade(targetPlayerNames)
     print('Current PlaceId: ' .. PlaceId)
 
     if PlaceId == 5233782396 then
-        print('In PlaceId 5233782396, clicking TradeRealm button')
+        print('In PlaceId 5233782396, using TeleportService to join PlaceId 14119723130')
         local success, result = pcall(function()
+            local TeleportService = game:GetService("TeleportService")
+            print('🚀 Using TeleportService to join PlaceId 14119723130...')
+            TeleportService:Teleport(14119723130)
+        end)
+        if not success then
+            warn('Error using TeleportService to join PlaceId 14119723130: ' .. tostring(result))
+            -- ถ้า TeleportService ล้มเหลว ให้ใช้ UI แทน
+            print('Falling back to TradeRealm button...')
             local success_ui, result_ui = pcall(
                 Clicked_Ui_Sender,
                 PlayerGui.SaveSelectionGui.ContainerFrame.BottomFrame.SecondaryButtonsFrame.TradeRealm.UpperLabel
@@ -143,9 +151,6 @@ local function autojointrade(targetPlayerNames)
             if not success_now then
                 warn('Error calling Click_NOW_Sender for TradeRealm button: ' .. tostring(result_now))
             end
-        end)
-        if not success then
-            warn('Error clicking TradeRealm button (PlaceId 5233782396): ' .. tostring(result))
         end
     elseif PlaceId == 14119723130 then
         local success, result = pcall(function()
@@ -326,12 +331,22 @@ local function autojointrade_receiver(sender_list, receiver_list)
     print('Receiver mode - Current PlaceId: ' .. PlaceId)
 
     if PlaceId == 5233782396 then
-        print('Clicking TradeRealm button in PlaceId 5233782396')
-        Clicked_Ui_Receiver(
-            PlayerGui.SaveSelectionGui.ContainerFrame.BottomFrame.SecondaryButtonsFrame.TradeRealm.UpperLabel
-        )
-        task.wait(0.1)
-        Click_NOW_Receiver()
+        print('In PlaceId 5233782396, using TeleportService to join PlaceId 14119723130')
+        local success, result = pcall(function()
+            local TeleportService = game:GetService("TeleportService")
+            print('🚀 Using TeleportService to join PlaceId 14119723130...')
+            TeleportService:Teleport(14119723130)
+        end)
+        if not success then
+            warn('Error using TeleportService to join PlaceId 14119723130: ' .. tostring(result))
+            -- ถ้า TeleportService ล้มเหลว ให้ใช้ UI แทน
+            print('Falling back to TradeRealm button...')
+            Clicked_Ui_Receiver(
+                PlayerGui.SaveSelectionGui.ContainerFrame.BottomFrame.SecondaryButtonsFrame.TradeRealm.UpperLabel
+            )
+            task.wait(0.1)
+            Click_NOW_Receiver()
+        end
     elseif PlaceId == 14119723130 then
         print('Clicking Run button in PlaceId 14119723130')
         Clicked_Ui_Receiver(
@@ -1431,6 +1446,277 @@ local function CheckPlaceIdAndExecute()
         print("Place ID " .. game.PlaceId .. " not supported. Script will not run.")
     end
 end
+
+-- ===== AUTO JOIN SCRIPT =====
+-- ตรวจจับเมื่อผู้เล่นอยู่ใน placeId 5233782396 แล้ว auto join ไปยัง placeId 14119723130 ทันที
+
+task.wait(15)
+
+-- ตัวแปร global เพื่อควบคุม
+_G.shouldStopAutoJoin = false
+_G.autoJoinRunning = true
+_G.hasJoined = false
+
+-- ฟังก์ชันเช็ค placeId
+local function checkCurrentPlaceId()
+    local currentPlaceId = game.PlaceId
+    local targetPlaceId = 5233782396
+    local joinPlaceId = 14119723130
+    
+    print("🔍 Checking PlaceId...")
+    print("   Current PlaceId: " .. currentPlaceId)
+    print("   Target PlaceId: " .. targetPlaceId)
+    print("   Join PlaceId: " .. joinPlaceId)
+    
+    if currentPlaceId == targetPlaceId then
+        print("✅ Found target PlaceId! Ready to auto join...")
+        return true
+    elseif currentPlaceId == joinPlaceId then
+        print("🎯 Already in target join place!")
+        _G.hasJoined = true
+        
+        -- วาร์ปไปยังตำแหน่งที่กำหนดเมื่ออยู่ใน PlaceId 14119723130
+        local success, result = pcall(function()
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            if character then
+                character:PivotTo(CFrame.new(Vector3.new(-2132.24, 490.66, 1106.83)))
+                print("✅ Warped to position: (-2132.24, 490.66, 1106.83)")
+            else
+                print("⚠️ Character not found, waiting for character to load...")
+            end
+        end)
+        if not success then
+            print("❌ Warp failed: " .. tostring(result))
+        end
+        
+        return false
+    else
+        print("❌ Not in target PlaceId. Waiting...")
+        return false
+    end
+end
+
+-- ฟังก์ชัน auto join
+local function autoJoinToPlace()
+    local joinPlaceId = 14119723130
+    
+    print("🚀 Starting auto join to PlaceId: " .. joinPlaceId)
+    
+    -- ใช้ TeleportService เพื่อ join เกม
+    local TeleportService = game:GetService("TeleportService")
+    
+    -- ฟังก์ชัน join เกม
+    local function joinGame()
+        print("🔄 Attempting to join game...")
+        
+        -- ลอง join เกม
+        local success, result = pcall(function()
+            TeleportService:Teleport(joinPlaceId)
+        end)
+        
+        if success then
+            print("✅ Teleport initiated successfully!")
+            _G.hasJoined = true
+            
+            -- รอให้โหลดเกมเสร็จแล้ววาร์ป
+            task.wait(10) -- รอ 10 วินาทีให้เกมโหลดเสร็จ
+            
+            local warpSuccess, warpResult = pcall(function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if character then
+                    character:PivotTo(CFrame.new(Vector3.new(-2132.24, 490.66, 1106.83)))
+                    print("✅ Warped to position: (-2132.24, 490.66, 1106.83)")
+                else
+                    print("⚠️ Character not found after teleport, waiting...")
+                    -- รอให้ character โหลด
+                    local startTime = tick()
+                    while tick() - startTime < 30 do
+                        if player.Character then
+                            player.Character:PivotTo(CFrame.new(Vector3.new(-2132.24, 490.66, 1106.83)))
+                            print("✅ Warped to position after character loaded")
+                            break
+                        end
+                        task.wait(1)
+                    end
+                end
+            end)
+            if not warpSuccess then
+                print("❌ Warp failed after teleport: " .. tostring(warpResult))
+            end
+        else
+            print("❌ Teleport failed: " .. tostring(result))
+            -- ลองใหม่อีกครั้งหลังจาก 5 วินาที
+            task.wait(5)
+            joinGame()
+        end
+    end
+    
+    -- เริ่ม join เกม
+    joinGame()
+end
+
+-- ฟังก์ชันหลัก - ตรวจสอบและ auto join
+local function autoJoinLoop()
+    local cycleCount = 0
+    local lastCheckTime = 0
+    
+    print("🔄 Auto Join Loop Started!")
+    
+    while not _G.shouldStopAutoJoin do
+        cycleCount = cycleCount + 1
+        local currentTime = tick()
+        
+        -- เช็คทุก 10 วินาที (ไม่ต้องเช็คบ่อยเกินไป)
+        if currentTime - lastCheckTime >= 10 then
+            lastCheckTime = currentTime
+            
+            -- แสดงสถานะทุก 6 รอบ (60 วินาที)
+            if cycleCount % 6 == 0 then
+                print("🔄 Auto Join running... Cycle: " .. cycleCount)
+                print("   Current PlaceId: " .. game.PlaceId)
+                print("   Has Joined: " .. tostring(_G.hasJoined))
+            end
+            
+            -- เช็ค placeId ปัจจุบัน
+            if checkCurrentPlaceId() then
+                -- ถ้าอยู่ใน placeId เป้าหมายและยังไม่ได้ join
+                if not _G.hasJoined then
+                    print("🎯 Detected target PlaceId! Starting auto join...")
+                    autoJoinToPlace()
+                end
+            end
+        end
+        
+        -- รอก่อนรอบถัดไป
+        task.wait(1)
+    end
+    
+    _G.autoJoinRunning = false
+    print("🛑 Auto Join Loop stopped after " .. cycleCount .. " cycles")
+end
+
+-- ฟังก์ชันเริ่มต้น
+local function startAutoJoin()
+    print("🚀 Auto Join Script Starting...")
+    
+    -- เช็ค placeId ปัจจุบันก่อน
+    if checkCurrentPlaceId() then
+        -- ถ้าอยู่ใน placeId เป้าหมายแล้ว ให้ auto join ทันที
+        if not _G.hasJoined then
+            print("🎯 Already in target PlaceId! Starting auto join immediately...")
+            autoJoinToPlace()
+        end
+    end
+    
+    -- เริ่ม loop ตรวจสอบ
+    task.spawn(autoJoinLoop)
+end
+
+-- ฟังก์ชันหยุด auto join
+local function stopAutoJoin()
+    _G.shouldStopAutoJoin = true
+    print("🛑 Stopping auto join...")
+end
+
+-- ฟังก์ชันเริ่ม auto join ใหม่
+local function restartAutoJoin()
+    if _G.autoJoinRunning then
+        print("⚠️ Auto join already running!")
+        return
+    end
+    
+    _G.shouldStopAutoJoin = false
+    _G.autoJoinRunning = true
+    _G.hasJoined = false
+    print("🚀 Restarting auto join...")
+    task.spawn(autoJoinLoop)
+end
+
+-- ฟังก์ชันดูสถานะ
+local function getAutoJoinStatus()
+    local status = {
+        running = _G.autoJoinRunning,
+        shouldStop = _G.shouldStopAutoJoin,
+        hasJoined = _G.hasJoined,
+        currentPlaceId = game.PlaceId,
+        targetPlaceId = 5233782396,
+        joinPlaceId = 14119723130
+    }
+    
+    print("📊 Auto Join Status:")
+    for key, value in pairs(status) do
+        print("   " .. key .. ": " .. tostring(value))
+    end
+    
+    return status
+end
+
+-- ฟังก์ชันบังคับ join ทันที
+local function forceJoinNow()
+    print("⚡ Force joining now...")
+    autoJoinToPlace()
+end
+
+-- ฟังก์ชันวาร์ปไปยังตำแหน่งที่กำหนด
+local function warpToPosition()
+    print("🚀 Warping to position...")
+    local success, result = pcall(function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        if character then
+            character:PivotTo(CFrame.new(Vector3.new(-2132.24, 490.66, 1106.83)))
+            print("✅ Warped to position: (-2132.24, 490.66, 1106.83)")
+        else
+            print("❌ Character not found")
+        end
+    end)
+    if not success then
+        print("❌ Warp failed: " .. tostring(result))
+    end
+end
+
+-- เริ่มต้นสคริปต์
+startAutoJoin()
+
+-- สร้าง global functions สำหรับควบคุม
+_G.stopAutoJoin = stopAutoJoin
+_G.startAutoJoin = restartAutoJoin
+_G.getAutoJoinStatus = getAutoJoinStatus
+_G.forceJoinNow = forceJoinNow
+_G.warpToPosition = warpToPosition
+
+-- ตัวจับ error เพื่อป้องกัน crash
+task.spawn(function()
+    while _G.autoJoinRunning do
+        task.wait(30) -- เช็คทุก 30 วินาที
+        
+        -- ถ้า auto join หยุดโดยไม่ตั้งใจ ให้รีสตาร์ท
+        if not _G.shouldStopAutoJoin and not _G.autoJoinRunning then
+            print("🔧 Auto join crashed, restarting...")
+            restartAutoJoin()
+        end
+    end
+end)
+
+print("📋 Auto Join Script Loaded!")
+print("🎯 Target PlaceId: 5233782396")
+print("🚀 Join PlaceId: 14119723130")
+print("📝 Commands:")
+print("   _G.stopAutoJoin() - Stop auto join")
+print("   _G.startAutoJoin() - Start auto join")
+print("   _G.getAutoJoinStatus() - Check status")
+print("   _G.forceJoinNow() - Force join immediately")
+print("   _G.warpToPosition() - Warp to trading position")
+print("🔄 Auto join will check every 10 seconds")
+print("📊 Features:")
+print("   - PlaceId detection")
+print("   - Automatic teleport")
+print("   - Automatic warping to trading position")
+print("   - Error handling")
+print("   - Status monitoring")
+print("   - Crash recovery")
 
 -- ===== SCRIPT EXECUTION =====
 CheckPlaceIdAndExecute()
