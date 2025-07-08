@@ -123,7 +123,7 @@ shoomsLabel.Text = "☄️ GAE: 0"
 shoomsLabel.ZIndex = 12
 shoomsLabel.Parent = mainContainer
 
--- 🔥 Death Points
+-- [DP] Death Points
 local deathPointsLabel = Instance.new("TextLabel")
 deathPointsLabel.Size = UDim2.new(1, 0, 0.2, 0)
 deathPointsLabel.Position = UDim2.new(0, 0, 0.45, 0)
@@ -131,7 +131,7 @@ deathPointsLabel.BackgroundTransparency = 1
 deathPointsLabel.TextColor3 = Color3.new(1, 0.5, 0) -- สีส้ม
 deathPointsLabel.Font = Enum.Font.SourceSansBold
 deathPointsLabel.TextScaled = true
-deathPointsLabel.Text = "🔥 DeathPoints: 0"
+deathPointsLabel.Text = "[DP] DeathPoints: 0"
 deathPointsLabel.ZIndex = 12
 deathPointsLabel.Parent = mainContainer
 
@@ -213,7 +213,7 @@ local function updateAllData()
     
     -- อัปเดต Death Points
     local deathPoints = calculateDeathPoints()
-    deathPointsLabel.Text = string.format("🔥 DeathPoints:", deathPoints)
+    deathPointsLabel.Text = string.format("[DP] DeathPoints: %d", deathPoints)
 end
 
 -- อัปเดตข้อมูลครั้งแรกทันที
