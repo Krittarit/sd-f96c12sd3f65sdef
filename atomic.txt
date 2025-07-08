@@ -8,7 +8,7 @@ local Lighting = game:GetService("Lighting")
 -- ตัวแปรสำหรับ error handling และ optimization
 local dataConnected = true
 local debugMode = false -- เปิด/ปิด debug messages
-local deathPointsCache = 0 -- cache Death Points
+local deathPointsCache = 0 -- cache DP
 local deathPointsUpdateCounter = 0 -- นับจำนวน loops
 
 -- ฟังก์ชันคำนวณ Death Points (นำมาจาก caldeathstat.lua)
@@ -155,7 +155,7 @@ shoomsLabel.Text = "☄️ GAE: 0"
 shoomsLabel.ZIndex = 12
 shoomsLabel.Parent = mainContainer
 
--- [DP] Death Points
+-- DP
 local deathPointsLabel = Instance.new("TextLabel")
 deathPointsLabel.Size = UDim2.new(1, 0, 0.2, 0)
 deathPointsLabel.Position = UDim2.new(0, 0, 0.45, 0)
@@ -163,7 +163,7 @@ deathPointsLabel.BackgroundTransparency = 1
 deathPointsLabel.TextColor3 = Color3.new(1, 0.5, 0) -- สีส้ม
 deathPointsLabel.Font = Enum.Font.SourceSansBold
 deathPointsLabel.TextScaled = true
-deathPointsLabel.Text = "[DP] DeathPoints: 0"
+deathPointsLabel.Text = "DP: 0"
 deathPointsLabel.ZIndex = 12
 deathPointsLabel.Parent = mainContainer
 
@@ -259,32 +259,32 @@ local function updateAllData()
         shoomsLabel.Text = "☄️ GAE: " .. currentShooms .. " | 0.0/loop"
     end
     
-    -- อัปเดต Death Points (ทุก 3 loops เพื่อประหยัดทรัพยากร)
+    -- อัปเดต DP (ทุก 3 loops เพื่อประหยัดทรัพยากร)
     deathPointsUpdateCounter = deathPointsUpdateCounter + 1
     
     -- ตรวจสอบว่าผู้เล่นเข้าเกมแล้วหรือยัง
     local playerInGame = game.Workspace.Characters:FindFirstChild(player.Name)
     
     if not playerInGame then
-        deathPointsLabel.Text = "[DP] ผู้เล่นยังไม่ได้เข้าเกม"
+        deathPointsLabel.Text = "DP: ผู้เล่นยังไม่ได้เข้าเกม"
         deathPointsCache = 0
     else
-        -- คำนวณ Death Points ใหม่ทุก 3 loops เท่านั้น
+        -- คำนวณ DP ใหม่ทุก 3 loops เท่านั้น
         if deathPointsUpdateCounter >= 3 then
             deathPointsUpdateCounter = 0
             local success, deathPoints = pcall(calculateDeathPoints)
             if success then
                 deathPointsCache = deathPoints
-                deathPointsLabel.Text = "[DP] DeathPoints: " .. deathPoints
+                deathPointsLabel.Text = "DP: " .. deathPoints
             else
-                deathPointsLabel.Text = "[DP] DeathPoints: Error"
+                deathPointsLabel.Text = "DP: Error"
                 if debugMode then
                     print("❌ Death Points Error: " .. tostring(deathPoints))
                 end
             end
         else
             -- ใช้ค่า cache
-            deathPointsLabel.Text = "[DP] DeathPoints: " .. deathPointsCache
+            deathPointsLabel.Text = "DP: " .. deathPointsCache
         end
     end
 end
@@ -295,9 +295,9 @@ if not success and debugMode then
     print("❌ Initial Update Error: " .. tostring(error))
 end
 
--- อัปเดตข้อมูลทุก 60 วินาที (ปรับปรุงให้ safe และประหยัดทรัพยากร)
+-- อัปเดตข้อมูลทุก 90 วินาที (ปรับปรุงให้ safe และประหยัดทรัพยากร)
 while true do
-    task.wait(60) -- ใช้ task.wait แทน wait เพื่อประสิทธิภาพดีกว่า
+    task.wait(90) -- ใช้ task.wait แทน wait เพื่อประสิทธิภาพดีกว่า
     
     local success, error = pcall(updateAllData)
     if not success then
