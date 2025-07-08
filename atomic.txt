@@ -1,74 +1,226 @@
--- ดึงข้อมูล Player
+-- ดึงข้อมูล Player และ Services
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 local data = playerGui:WaitForChild("Data")
 local coinsObj = data:WaitForChild("Coins")
+local Lighting = game:GetService("Lighting")
 
--- 🖤 สร้าง GUI ลด CPU และแสดงยอดเห็ด 🖤 --
+-- ฟังก์ชันคำนวณ Death Points (นำมาจาก caldeathstat.lua)
+local function safeGetValue(object, defaultValue)
+    if object and object.Value ~= nil then
+        return object.Value
+    end
+    return defaultValue or 0
+end
+
+local function safeToString(value)
+    if type(value) == "string" then
+        return value
+    elseif type(value) == "number" then
+        return tostring(value)
+    elseif type(value) == "userdata" and value.Name then
+        return value.Name
+    else
+        return tostring(value)
+    end
+end
+
+local function calculateDeathPoints()
+    if not player or not player.Settings or not player.Settings.Slot then
+        return 0
+    end
+    
+    if not playerGui or not data then
+        return 0
+    end
+    
+    local currentSlotRaw = player.Settings.Slot.Value
+    local currentSlot = safeToString(currentSlotRaw)
+    
+    local slotData = data:FindFirstChild(currentSlot) or data[currentSlot]
+    
+    if not slotData then
+        return 0
+    end
+    
+    local deathStats = slotData:FindFirstChild("DeathStats")
+    if not deathStats then
+        return 0
+    end
+    
+    local totalPoints = 0
+    
+    -- คำนวณ Growth Stages
+    local growthPoints = 0
+    local adultValue = safeGetValue(deathStats:FindFirstChild("GrowCreatureAdult"), 0)
+    local teenValue = safeGetValue(deathStats:FindFirstChild("GrowCreatureTeen"), 0)
+    
+    if adultValue == 1 then growthPoints = growthPoints + 7.5 end
+    if teenValue == 1 then growthPoints = growthPoints + 7.5 end
+    totalPoints = totalPoints + growthPoints
+    
+    -- คำนวณ Missions Completed
+    local missionsCompleted = safeGetValue(deathStats:FindFirstChild("MissionsCompleted"), 0)
+    local missionPoints = missionsCompleted * 4
+    totalPoints = totalPoints + missionPoints
+    
+    -- คำนวณ Disasters Survived
+    local disastersSurvived = safeGetValue(deathStats:FindFirstChild("DisastersSurvived"), 0)
+    local disasterPoints = disastersSurvived * 6
+    totalPoints = totalPoints + disasterPoints
+    
+    -- คำนวณ Time Played
+    local timePlayed = safeGetValue(deathStats:FindFirstChild("TimePlayed"), 0)
+    local timePoints = math.floor(timePlayed / 210)
+    totalPoints = totalPoints + timePoints
+    
+    return totalPoints
+end
+
+-- 🖤 สร้าง GUI ลด CPU และแสดงข้อมูลครบถ้วน 🖤 --
 local screenGui = Instance.new("ScreenGui")
-screenGui.ResetOnSpawn = false -- ป้องกันหายเมื่อรีเซ็ตตัวละคร
-screenGui.IgnoreGuiInset = true -- ✅ คลุมเต็ม 100% ของหน้าจอ
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
 screenGui.Parent = playerGui
 
--- สร้างพื้นหลังสีดำ **(คลุมทั้งหน้าจอจริงๆ)**
+-- สร้างพื้นหลังสีดำ
 local blackFrame = Instance.new("Frame")
-blackFrame.Size = UDim2.new(1, 0, 1, 0) -- ✅ คลุมเต็ม 100%
-blackFrame.Position = UDim2.new(0, 0, 0, 0) -- ✅ อยู่มุมบนสุด
-blackFrame.BackgroundColor3 = Color3.new(0, 0, 0) -- สีดำ
-blackFrame.ZIndex = 10 -- **ให้อยู่ด้านหน้า**
+blackFrame.Size = UDim2.new(1, 0, 1, 0)
+blackFrame.Position = UDim2.new(0, 0, 0, 0)
+blackFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+blackFrame.ZIndex = 10
 blackFrame.Parent = screenGui
 
--- สร้าง TextLabel สำหรับแสดงยอดเห็ด (ใหญ่ + ตรงกลาง)
+-- สร้าง Container Frame สำหรับจัดกลุ่มข้อมูล
+local mainContainer = Instance.new("Frame")
+mainContainer.Size = UDim2.new(0.9, 0, 0.7, 0)
+mainContainer.Position = UDim2.new(0.05, 0, 0.15, 0)
+mainContainer.BackgroundTransparency = 1
+mainContainer.ZIndex = 11
+mainContainer.Parent = screenGui
+
+-- 🎮 ชื่อผู้เล่น (ด้านบนสุด)
+local playerNameLabel = Instance.new("TextLabel")
+playerNameLabel.Size = UDim2.new(1, 0, 0.15, 0)
+playerNameLabel.Position = UDim2.new(0, 0, 0, 0)
+playerNameLabel.BackgroundTransparency = 1
+playerNameLabel.TextColor3 = Color3.new(0, 1, 1) -- สีฟ้าอ่อน
+playerNameLabel.Font = Enum.Font.SourceSansBold
+playerNameLabel.TextScaled = true
+playerNameLabel.Text = "🎮 " .. player.Name
+playerNameLabel.ZIndex = 12
+playerNameLabel.Parent = mainContainer
+
+-- ☄️ ยอด GAE (เห็ด)
 local shoomsLabel = Instance.new("TextLabel")
-shoomsLabel.Size = UDim2.new(0.8, 0, 0.2, 0) 
-shoomsLabel.Position = UDim2.new(0.1, 0, 0.4, 0) -- **ให้อยู่กลางจอ**
+shoomsLabel.Size = UDim2.new(1, 0, 0.2, 0)
+shoomsLabel.Position = UDim2.new(0, 0, 0.2, 0)
 shoomsLabel.BackgroundTransparency = 1
-shoomsLabel.TextColor3 = Color3.new(1, 1, 1) -- สีขาว
+shoomsLabel.TextColor3 = Color3.new(1, 1, 0) -- สีเหลือง
 shoomsLabel.Font = Enum.Font.SourceSansBold
 shoomsLabel.TextScaled = true
-shoomsLabel.Text = "☄️ GAE: 0" -- ค่าเริ่มต้น
-shoomsLabel.ZIndex = 11
-shoomsLabel.Parent = screenGui
+shoomsLabel.Text = "☄️ GAE: 0"
+shoomsLabel.ZIndex = 12
+shoomsLabel.Parent = mainContainer
 
--- สร้าง TextLabel สำหรับแสดงเวลาที่ออนไลน์
+-- 🔥 Death Points
+local deathPointsLabel = Instance.new("TextLabel")
+deathPointsLabel.Size = UDim2.new(1, 0, 0.2, 0)
+deathPointsLabel.Position = UDim2.new(0, 0, 0.45, 0)
+deathPointsLabel.BackgroundTransparency = 1
+deathPointsLabel.TextColor3 = Color3.new(1, 0.5, 0) -- สีส้ม
+deathPointsLabel.Font = Enum.Font.SourceSansBold
+deathPointsLabel.TextScaled = true
+deathPointsLabel.Text = "🔥 DeathPoints: 0"
+deathPointsLabel.ZIndex = 12
+deathPointsLabel.Parent = mainContainer
+
+-- ⏳ เวลาออนไลน์
 local timeLabel = Instance.new("TextLabel")
-timeLabel.Size = UDim2.new(0.8, 0, 0.1, 0)
-timeLabel.Position = UDim2.new(0.1, 0, 0.55, 0) -- **อยู่ใต้ยอดเห็ด**
+timeLabel.Size = UDim2.new(1, 0, 0.1, 0)
+timeLabel.Position = UDim2.new(0, 0, 0.7, 0)
 timeLabel.BackgroundTransparency = 1
-timeLabel.TextColor3 = Color3.new(1, 1, 1) -- สีขาว
+timeLabel.TextColor3 = Color3.new(0.5, 1, 0.5) -- สีเขียวอ่อน
 timeLabel.Font = Enum.Font.SourceSansBold
 timeLabel.TextScaled = true
-timeLabel.Text = "⏳ Online: 00:00:00" -- ค่าเริ่มต้น
-timeLabel.ZIndex = 11
-timeLabel.Parent = screenGui
+timeLabel.Text = "⏳ Online: 00:00:00"
+timeLabel.ZIndex = 12
+timeLabel.Parent = mainContainer
 
--- ตัวแปรติดตามเวลาที่ออนไลน์ และจำนวนเห็ดที่เพิ่มขึ้น
-local startTime = tick() -- เก็บเวลาที่เข้าเกม
-local initialShooms = coinsObj and coinsObj.Value or 0 -- ค่าจำนวนเห็ดตอนเริ่ม
-local lastShooms = initialShooms -- เก็บค่าจำนวนเห็ดล่าสุด
+-- 🕐 เวลาปัจจุบัน (Game Time)
+local currentTimeLabel = Instance.new("TextLabel")
+currentTimeLabel.Size = UDim2.new(1, 0, 0.1, 0)
+currentTimeLabel.Position = UDim2.new(0, 0, 0.82, 0)
+currentTimeLabel.BackgroundTransparency = 1
+currentTimeLabel.TextColor3 = Color3.new(0.8, 0.8, 1) -- สีม่วงอ่อน
+currentTimeLabel.Font = Enum.Font.SourceSansBold
+currentTimeLabel.TextScaled = true
+currentTimeLabel.Text = "🕐 Game Time: 00:00:00"
+currentTimeLabel.ZIndex = 12
+currentTimeLabel.Parent = mainContainer
 
--- ฟังก์ชันอัปเดต Shooms และเวลาที่ออนไลน์
-local function updateShoomsAndTime()
+-- เส้นตกแต่ง (เส้นคั่น)
+local decorLine1 = Instance.new("Frame")
+decorLine1.Size = UDim2.new(0.8, 0, 0.005, 0)
+decorLine1.Position = UDim2.new(0.1, 0, 0.17, 0)
+decorLine1.BackgroundColor3 = Color3.new(1, 1, 1)
+decorLine1.BorderSizePixel = 0
+decorLine1.ZIndex = 12
+decorLine1.Parent = mainContainer
+
+local decorLine2 = Instance.new("Frame")
+decorLine2.Size = UDim2.new(0.8, 0, 0.005, 0)
+decorLine2.Position = UDim2.new(0.1, 0, 0.68, 0)
+decorLine2.BackgroundColor3 = Color3.new(1, 1, 1)
+decorLine2.BorderSizePixel = 0
+decorLine2.ZIndex = 12
+decorLine2.Parent = mainContainer
+
+-- ตัวแปรติดตามเวลาและค่าเริ่มต้น
+local startTime = tick()
+local initialShooms = coinsObj and coinsObj.Value or 0
+local lastShooms = initialShooms
+
+-- ฟังก์ชันอัปเดตข้อมูลทั้งหมด
+local function updateAllData()
     -- อัปเดตเวลาที่ออนไลน์
     local elapsedTime = tick() - startTime
     local hours = math.floor(elapsedTime / 3600)
     local minutes = math.floor((elapsedTime % 3600) / 60)
     local seconds = math.floor(elapsedTime % 60)
     timeLabel.Text = string.format("⏳ Online: %02d:%02d:%02d", hours, minutes, seconds)
+    
+    -- อัปเดตเวลาปัจจุบัน (ใช้เวลาของ Roblox)
+    local currentTime = os.date("*t") -- ใช้เวลาของระบบ Roblox โดยตรง
+    currentTimeLabel.Text = string.format("🕐 Game Time: %02d:%02d:%02d", currentTime.hour, currentTime.min, currentTime.sec)
 
-    -- อัปเดตยอด Shooms
+    -- อัปเดตยอด GAE (Shooms)
     local currentShooms = coinsObj and coinsObj.Value or 0
-    local shoomsDifference = currentShooms - initialShooms -- คำนวณจำนวนที่เพิ่มขึ้น
+    local shoomsDifference = currentShooms - initialShooms
+    
+    -- คำนวณ Shooms ต่อนาที
+    local elapsedMinutes = elapsedTime / 60
+    local shoomsPerMin = 0
+    if elapsedMinutes > 0 and shoomsDifference > 0 then
+        shoomsPerMin = shoomsDifference / elapsedMinutes
+    end
 
     if shoomsDifference > 0 then
-        shoomsLabel.Text = string.format("☄️ GAE: %d (+%d)", currentShooms, shoomsDifference)
+        shoomsLabel.Text = string.format("☄️ GAE: %d (+%d) | %.1f/min", currentShooms, shoomsDifference, shoomsPerMin)
     else
-        shoomsLabel.Text = string.format("☄️ GAE: %d", currentShooms)
+        shoomsLabel.Text = string.format("☄️ GAE: %d | 0.0/min", currentShooms)
     end
+    
+    -- อัปเดต Death Points
+    local deathPoints = calculateDeathPoints()
+    deathPointsLabel.Text = string.format("🔥 DeathPoints:", deathPoints)
 end
 
--- อัปเดตค่าทุก 3 นาที (180 วินาที) แทนการใช้ Heartbeat เพื่อลดการโหลด CPU
+-- อัปเดตข้อมูลครั้งแรกทันที
+updateAllData()
+
+-- อัปเดตข้อมูลทุก 3 นาที
 while true do
-    wait(180) -- อัปเดตทุก 3 นาที ลดการโหลด CPU อย่างมาก
-    updateShoomsAndTime()
+    wait(180) -- อัปเดตทุก 3 นาที เพื่อลด CPU usage
+    updateAllData()
 end
