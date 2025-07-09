@@ -297,7 +297,7 @@ end
 
 -- อัปเดตข้อมูลทุก 90 วินาที (ปรับปรุงให้ safe และประหยัดทรัพยากร)
 while true do
-    task.wait(90) -- ใช้ task.wait แทน wait เพื่อประสิทธิภาพดีกว่า
+    task.wait(300) -- ใช้ task.wait แทน wait เพื่อประสิทธิภาพดีกว่า
     
     local success, error = pcall(updateAllData)
     if not success then
