@@ -5,13 +5,15 @@ local data = playerGui:WaitForChild("Data")
 local coinsObj = data:WaitForChild("Coins")
 local Lighting = game:GetService("Lighting")
 
--- ตัวแปรสำหรับ error handling และ optimization
+-- ตัวแปรสำหรับ error handling และ optimization (ปรับปรุง)
 local dataConnected = true
 local debugMode = false -- เปิด/ปิด debug messages
 local deathPointsCache = 0 -- cache DP
 local deathPointsUpdateCounter = 0 -- นับจำนวน loops
+local timeUpdateCounter = 0 -- นับสำหรับอัปเดตเวลา
+local lastTickTime = tick() -- cache เวลา
 
--- ฟังก์ชันคำนวณ Death Points (นำมาจาก caldeathstat.lua)
+-- ฟังก์ชันคำนวณ Death Points (ปรับปรุงให้เร็วขึ้น)
 local function safeGetValue(object, defaultValue)
     if object and object.Value ~= nil then
         return object.Value
@@ -32,79 +34,50 @@ local function safeToString(value)
 end
 
 local function calculateDeathPoints()
-    -- Debug: เริ่มการคำนวณ (เฉพาะ debug mode)
-    if debugMode then
-        print("🔥 เริ่มคำนวณ Death Points 🔥")
-    end
-    
-    -- ตรวจสอบการเชื่อมต่อพื้นฐาน
+    -- ตรวจสอบการเชื่อมต่อพื้นฐาน (ลบ debug ออก)
     if not player or not player.Settings or not player.Settings.Slot then
-        if debugMode then print("❌ Error: ไม่พบข้อมูลผู้เล่น") end
         return 0
     end
     
     if not playerGui or not playerGui.Data then
-        if debugMode then print("❌ Error: ไม่พบข้อมูล PlayerGui") end
         return 0
     end
     
-    -- ดึงข้อมูล Slot และ DeathStats
+    -- ดึงข้อมูล Slot และ DeathStats (เร็วขึ้น)
     local currentSlotRaw = player.Settings.Slot.Value
     local currentSlot = safeToString(currentSlotRaw)
-    if debugMode then print("📍 Current Slot: " .. currentSlot) end
     
-    local slotData = playerGui.Data:FindFirstChild(currentSlot) or playerGui.Data[currentSlot]
-    
+    local slotData = playerGui.Data:FindFirstChild(currentSlot)
     if not slotData then
-        if debugMode then print("❌ Error: ไม่พบ " .. currentSlot) end
         return 0
     end
     
     local deathStats = slotData:FindFirstChild("DeathStats")
     if not deathStats then
-        if debugMode then print("❌ Error: ไม่พบ DeathStats") end
         return 0
     end
     
-    if debugMode then print("✅ พบข้อมูลสำหรับ " .. currentSlot) end
-    
-    -- ใส่ yield เพื่อลด blocking
-    task.wait()
-    
+    -- คำนวณแบบเร็ว (ลบ yield ออก)
     local totalPoints = 0
     
-    -- 1. คำนวณ Growth Stages
-    local growthPoints = 0
+    -- 1. Growth Stages
     local adultValue = safeGetValue(deathStats:FindFirstChild("GrowCreatureAdult"), 0)
     local teenValue = safeGetValue(deathStats:FindFirstChild("GrowCreatureTeen"), 0)
     
-    if adultValue == 1 then growthPoints = growthPoints + 7.5 end
-    if teenValue == 1 then growthPoints = growthPoints + 7.5 end
-    totalPoints = totalPoints + growthPoints
+    if adultValue == 1 then totalPoints = totalPoints + 7.5 end
+    if teenValue == 1 then totalPoints = totalPoints + 7.5 end
     
-    -- 2. คำนวณ Missions Completed
+    -- 2. Missions Completed
     local missionsCompleted = safeGetValue(deathStats:FindFirstChild("MissionsCompleted"), 0)
-    local missionPoints = missionsCompleted * 4
-    totalPoints = totalPoints + missionPoints
+    totalPoints = totalPoints + (missionsCompleted * 4)
     
-    -- 3. คำนวณ Disasters Survived
+    -- 3. Disasters Survived
     local disastersSurvived = safeGetValue(deathStats:FindFirstChild("DisastersSurvived"), 0)
-    local disasterPoints = disastersSurvived * 6
-    totalPoints = totalPoints + disasterPoints
+    totalPoints = totalPoints + (disastersSurvived * 6)
     
-    -- 4. คำนวณ Time Played
+    -- 4. Time Played
     local timePlayed = safeGetValue(deathStats:FindFirstChild("TimePlayed"), 0)
-    local timePoints = math.floor(timePlayed / 210)
-    totalPoints = totalPoints + timePoints
-    
-    -- แสดงผลรวม (เฉพาะ debug mode)
-    if debugMode then
-        print("🌱 Growth Stages: " .. growthPoints .. " คะแนน")
-        print("🎯 Missions Completed: " .. missionPoints .. " คะแนน")
-        print("🌪️ Disasters Survived: " .. disasterPoints .. " คะแนน")
-        print("⏰ Time Played: " .. timePoints .. " คะแนน")
-        print("🎉 รวมทั้งหมด: " .. totalPoints .. " Death Points 🎉")
-    end
+    totalPoints = totalPoints + math.floor(timePlayed / 210)
     
     return totalPoints
 end
@@ -215,31 +188,32 @@ local lastShooms = initialShooms
 local lastUpdateTime = tick()
 local previousShooms = initialShooms
 
--- ฟังก์ชันอัปเดตข้อมูลทั้งหมด (ปรับปรุงให้ประหยัดทรัพยากร)
+-- ฟังก์ชันอัปเดตข้อมูลทั้งหมด (ปรับปรุงให้ประหยัดทรัพยากรมาก)
 local function updateAllData()
-    -- ใส่ yield เพื่อไม่ให้ block main thread
-    task.wait()
+    local currentTick = tick()
     
-    -- อัปเดตเวลาที่ออนไลน์
-    local elapsedTime = tick() - startTime
-    local hours = math.floor(elapsedTime / 3600)
-    local minutes = math.floor((elapsedTime % 3600) / 60)
-    local seconds = math.floor(elapsedTime % 60)
-    timeLabel.Text = "⏳ Online: " .. string.format("%02d:%02d:%02d", hours, minutes, seconds)
-    
-    -- อัปเดตเวลาปัจจุบัน (ใช้เวลาของ Roblox)
-    local currentGameTime = os.date("*t")
-    currentTimeLabel.Text = "🕐 Game Time: " .. string.format("%02d:%02d:%02d", currentGameTime.hour, currentGameTime.min, currentGameTime.sec)
-    
-    -- yield เพื่อไม่ block
-    task.wait()
+    -- อัปเดตเวลาทุก 2 รอบเท่านั้น (ประหยัดทรัพยากร)
+    timeUpdateCounter = timeUpdateCounter + 1
+    if timeUpdateCounter >= 2 then
+        timeUpdateCounter = 0
+        
+        -- อัปเดตเวลาที่ออนไลน์
+        local elapsedTime = currentTick - startTime
+        local hours = math.floor(elapsedTime / 3600)
+        local minutes = math.floor((elapsedTime % 3600) / 60)
+        local seconds = math.floor(elapsedTime % 60)
+        timeLabel.Text = "⏳ Online: " .. string.format("%02d:%02d:%02d", hours, minutes, seconds)
+        
+        -- อัปเดตเวลาปัจจุบัน (ใช้เวลาของ Roblox)
+        local currentGameTime = os.date("*t")
+        currentTimeLabel.Text = "🕐 Game Time: " .. string.format("%02d:%02d:%02d", currentGameTime.hour, currentGameTime.min, currentGameTime.sec)
+    end
 
-    -- อัปเดตยอด GAE (Shooms) - ปรับปรุงให้เบากว่า
+    -- อัปเดตยอด GAE (Shooms) - ปรับปรุงให้เบากว่า (ทุกรอบ)
     local currentShooms = coinsObj and coinsObj.Value or 0
     local shoomsDifference = currentShooms - initialShooms
     
-    -- คำนวณ Shooms ต่อ loop (30 วินาที)
-    local currentTick = tick()
+    -- คำนวณ Shooms ต่อ loop (แบบประหยัด)
     local timeSinceLastUpdate = currentTick - lastUpdateTime
     local shoomsGained = currentShooms - previousShooms
     local shoomsPerLoop = 0
@@ -252,14 +226,14 @@ local function updateAllData()
     lastUpdateTime = currentTick
     previousShooms = currentShooms
 
-    -- ปรับการแสดงผลให้เบากว่า
+    -- แสดงผล GAE
     if shoomsDifference > 0 then
         shoomsLabel.Text = "☄️ GAE: " .. currentShooms .. " (+" .. shoomsDifference .. ") | " .. shoomsPerLoop .. "/loop"
     else
         shoomsLabel.Text = "☄️ GAE: " .. currentShooms .. " | 0.0/loop"
     end
     
-    -- อัปเดต DP (ทุก 3 loops เพื่อประหยัดทรัพยากร)
+    -- อัปเดต DP (ทุก 5 loops เพื่อประหยัดทรัพยากรมาก)
     deathPointsUpdateCounter = deathPointsUpdateCounter + 1
     
     -- ตรวจสอบว่าผู้เล่นเข้าเกมแล้วหรือยัง
@@ -269,8 +243,8 @@ local function updateAllData()
         deathPointsLabel.Text = "DP: ผู้เล่นยังไม่ได้เข้าเกม"
         deathPointsCache = 0
     else
-        -- คำนวณ DP ใหม่ทุก 3 loops เท่านั้น
-        if deathPointsUpdateCounter >= 3 then
+        -- คำนวณ DP ใหม่ทุก 5 loops เท่านั้น (ประหยัดกว่าเดิม)
+        if deathPointsUpdateCounter >= 5 then
             deathPointsUpdateCounter = 0
             local success, deathPoints = pcall(calculateDeathPoints)
             if success then
@@ -278,12 +252,9 @@ local function updateAllData()
                 deathPointsLabel.Text = "DP: " .. deathPoints
             else
                 deathPointsLabel.Text = "DP: Error"
-                if debugMode then
-                    print("❌ Death Points Error: " .. tostring(deathPoints))
-                end
             end
         else
-            -- ใช้ค่า cache
+            -- ใช้ค่า cache (ประหยัดทรัพยากร)
             deathPointsLabel.Text = "DP: " .. deathPointsCache
         end
     end
@@ -291,20 +262,14 @@ end
 
 -- อัปเดตข้อมูลครั้งแรกทันที
 local success, error = pcall(updateAllData)
-if not success and debugMode then
-    print("❌ Initial Update Error: " .. tostring(error))
-end
 
--- อัปเดตข้อมูลทุก 90 วินาที (ปรับปรุงให้ safe และประหยัดทรัพยากร)
+-- อัปเดตข้อมูลทุก 300 วินาที (เปลี่ยนจาก 300 เป็น 300 แต่ลดการคำนวณ)
 while true do
-    task.wait(300) -- ใช้ task.wait แทน wait เพื่อประสิทธิภาพดีกว่า
+    task.wait(300) -- เปลี่ยนจาก 300 เป็น 300 วินาที แต่ลดการทำงานภายใน
     
     local success, error = pcall(updateAllData)
     if not success then
-        if debugMode then
-            print("❌ Update Error: " .. tostring(error))
-        end
-        -- รอสักครู่ก่อนลองใหม่
+        -- รอสักครู่ก่อนลองใหม่ (ในกรณี error)
         task.wait(5)
     end
 end
