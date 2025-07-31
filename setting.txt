@@ -1,127 +1,118 @@
---performancemode
+-- Soundtrack setting
 local args = {
-	"States",
-	{
-		"CharacterReparent",
-		true
-	}
+	"Soundtrack",
+	0
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
---camerashake
+-- Ambience setting
 local args = {
-	"States",
-	{
-		"CameraShake",
-		false
-	}
+	"Ambience",
+	0
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
---HUDPINNEDMISSION
+-- Effects setting
 local args = {
-	"States",
-	{
-		"HUDPinnedMissions",
-		false
-	}
+	"Effects",
+	0
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
---Redeucebloom
+-- Calls setting
 local args = {
-	"States",
-	{
-		"ReduceBloom",
-		true
-	}
+	"Calls",
+	0
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
-
---Medalautoclip
+-- Footsteps setting
 local args = {
-	"States",
-	{
-		"AutoClipping",
-		false
-	}
+	"Footsteps",
+	0
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
-
-
-
---FootprintVisuals
+-- Interface setting
 local args = {
-	"States",
-	{
-		"Footprints",
-		false
-	}
+	"Interface",
+	0
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
---Blood effect
+-- CharacterReparent setting
 local args = {
-	"States",
-	{
-		"BloodEffects",
-		false
-	}
+	"CharacterReparent",
+	true
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
-
---Camera smoothing
+-- HQLighting setting
 local args = {
-	"States",
-	{
-		"CameraSmoothing",
-		false
-	}
+	"HQLighting",
+	false
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
---HUD Item Notification
+-- BloodEffects setting
 local args = {
-	"States",
-	{
-		"HUDItemNotification",
-		false
-	}
+	"BloodEffects",
+	false
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
---HQLightning
+-- CameraShake setting
 local args = {
-	"States",
-	{
-		"HQLighting",
-		false
-	}
+	"CameraShake",
+	false
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
+-- CameraSmoothing setting
+local args = {
+	"CameraSmoothing",
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
+-- Footprints setting
+local args = {
+	"Footprints",
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
+-- HUDItemNotification setting
+local args = {
+	"HUDItemNotification",
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
+-- HUDPinnedMissions setting
+local args = {
+	"HUDPinnedMissions",
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
 
-
-
-
-
-
-
-
-
-
+-- ReduceBloom setting
+local args = {
+	"ReduceBloom",
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
