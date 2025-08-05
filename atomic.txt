@@ -213,24 +213,15 @@ local function updateAllData()
     local currentShooms = coinsObj and coinsObj.Value or 0
     local shoomsDifference = currentShooms - initialShooms
     
-    -- คำนวณ Shooms ต่อ loop (แบบประหยัด)
-    local timeSinceLastUpdate = currentTick - lastUpdateTime
-    local shoomsGained = currentShooms - previousShooms
-    local shoomsPerLoop = 0
-    
-    if timeSinceLastUpdate > 0 and shoomsGained > 0 then
-        shoomsPerLoop = math.floor((shoomsGained / timeSinceLastUpdate) * 30 * 10) / 10 -- ปัดทศนิยม 1 ตำแหน่ง
-    end
-    
     -- อัปเดตค่าสำหรับ loop ถัดไป
     lastUpdateTime = currentTick
     previousShooms = currentShooms
 
     -- แสดงผล GAE
     if shoomsDifference > 0 then
-        shoomsLabel.Text = "☄️ GAE: " .. currentShooms .. " (+" .. shoomsDifference .. ") | " .. shoomsPerLoop .. "/loop"
+        shoomsLabel.Text = "☄️ GAE: " .. currentShooms .. " (+" .. shoomsDifference .. ")"
     else
-        shoomsLabel.Text = "☄️ GAE: " .. currentShooms .. " | 0.0/loop"
+        shoomsLabel.Text = "☄️ GAE: " .. currentShooms
     end
     
     -- อัปเดต DP (ทุก 5 loops เพื่อประหยัดทรัพยากรมาก)
@@ -263,9 +254,9 @@ end
 -- อัปเดตข้อมูลครั้งแรกทันที
 local success, error = pcall(updateAllData)
 
--- อัปเดตข้อมูลทุก 300 วินาที (เปลี่ยนจาก 300 เป็น 300 แต่ลดการคำนวณ)
+-- อัปเดตข้อมูลทุก 2 วินาที (ประหยัดทรัพยากรมากขึ้น)
 while true do
-    task.wait(1) -- เปลี่ยนจาก 300 เป็น 300 วินาที แต่ลดการทำงานภายใน
+    task.wait(2) -- เปลี่ยนเป็น 2 วินาที เพื่อประหยัดทรัพยากรมากขึ้น
     
     local success, error = pcall(updateAllData)
     if not success then
