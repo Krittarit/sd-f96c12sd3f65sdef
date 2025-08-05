@@ -265,7 +265,7 @@ local success, error = pcall(updateAllData)
 
 -- อัปเดตข้อมูลทุก 300 วินาที (เปลี่ยนจาก 300 เป็น 300 แต่ลดการคำนวณ)
 while true do
-    task.wait(300) -- เปลี่ยนจาก 300 เป็น 300 วินาที แต่ลดการทำงานภายใน
+    task.wait(1) -- เปลี่ยนจาก 300 เป็น 300 วินาที แต่ลดการทำงานภายใน
     
     local success, error = pcall(updateAllData)
     if not success then
