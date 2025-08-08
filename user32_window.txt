@@ -30,7 +30,7 @@ local function deleteKeywordObjects()
     local workspace = game:GetService("Workspace")
     local deletedCount = 0
     
-    print("เริ่มค้นหาและลบ objects ตาม ClassName...")
+    print("เริ่มค้นหาและลบ Texture และ MeshPart objects...")
     
     -- ฟังก์ชันสำหรับตรวจสอบว่าชื่อ object ตรงกับ keyword หรือไม่ (ปิดใช้งานแล้ว)
     local function matchesKeyword(objectName)
@@ -51,20 +51,25 @@ local function deleteKeywordObjects()
     
     -- ฟังก์ชันสำหรับตรวจสอบว่าควรลบ object หรือไม่
     local function shouldDeleteObject(object)
-        -- ตรวจสอบว่าอยู่ในโฟลเดอร์ที่ยกเว้นหรือไม่
+        -- ตรวจสอบ ClassName เป็น Texture (ลบทุก Texture โดยไม่เว้นที่สำคัญ)
+        if object.ClassName == "Texture" then
+            return true
+        end
+        
+        -- ตรวจสอบว่าอยู่ในโฟลเดอร์ที่ยกเว้นหรือไม่ (เฉพาะ MeshPart)
         local current = object
         while current and current ~= workspace do
             if current.Name == "Food" and current.Parent and current.Parent.Name == "Interactions" then
-                return false -- ไม่ลบ objects ใน workspace.Interactions.Food
+                return false -- ไม่ลบ MeshPart ใน workspace.Interactions.Food
             end
             if current.Name == "Mud" and current.Parent and current.Parent.Name == "Interactions" then
-                return false -- ไม่ลบ objects ใน workspace.Interactions.Mud
+                return false -- ไม่ลบ MeshPart ใน workspace.Interactions.Mud
             end
             if current.Name == "Lakes" and current.Parent and current.Parent.Name == "Interactions" then
-                return false -- ไม่ลบ objects ใน workspace.Interactions.Lakes
+                return false -- ไม่ลบ MeshPart ใน workspace.Interactions.Lakes
             end
             if current.Name == "Characters" and current.Parent and current.Parent.Name == "Workspace" then
-                return false -- ไม่ลบ objects ใน workspace.Characters
+                return false -- ไม่ลบ MeshPart ใน workspace.Characters
             end
             current = current.Parent
         end
@@ -74,12 +79,7 @@ local function deleteKeywordObjects()
         --     return true
         -- end
         
-        -- ตรวจสอบ ClassName เป็น Texture
-        if object.ClassName == "Texture" then
-            return true
-        end
-        
-        -- ตรวจสอบ ClassName เป็น MeshPart
+        -- ตรวจสอบ ClassName เป็น MeshPart (ลบทุก MeshPart)
         if object.ClassName == "MeshPart" then
             return true
         end
