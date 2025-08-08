@@ -1,1 +1,153 @@
-setfpscap(3);
+-- Script สำหรับลบ objects ที่อยู่ใน keyword list
+-- ใช้ find ตั้งแต่ root ของ workspace
+
+-- local keywordList = {
+--     "Rock",
+--     "Meshes", 
+--     "RootA",
+--     "Plane.040",
+--     "Tall_rock",
+--     "Icicle",
+--     "FlatRock",
+--     "Trunk",
+--     "BigRock1",
+--     "swamptrunk",
+--     "Cactus",
+--     "Rock1",
+--     "Rock2",
+--     "Rock3",
+--     "RibBone",
+--     "RockHook",
+--     "Wood1",
+--     "Terrace1",
+--     "terracetop1",
+--     "Skeleton"
+-- }
+
+-- ฟังก์ชันสำหรับลบ object ที่มีชื่อตรงกับ keyword
+local function deleteKeywordObjects()
+    local workspace = game:GetService("Workspace")
+    local deletedCount = 0
+    
+    print("เริ่มค้นหาและลบ objects ตาม ClassName...")
+    
+    -- ฟังก์ชันสำหรับตรวจสอบว่าชื่อ object ตรงกับ keyword หรือไม่ (ปิดใช้งานแล้ว)
+    local function matchesKeyword(objectName)
+        -- ตรวจสอบ keyword ปกติ (ปิดใช้งานแล้ว)
+        -- for _, keyword in pairs(keywordList) do
+        --     if objectName == keyword then
+        --         return true
+        --     end
+        -- end
+        
+        -- ตรวจสอบ objects ที่นำหน้าด้วย "Meshes/" (ปิดใช้งานแล้ว)
+        -- if string.sub(objectName, 1, 7) == "Meshes/" then
+        --     return true
+        -- end
+        
+        return false
+    end
+    
+    -- ฟังก์ชันสำหรับตรวจสอบว่าควรลบ object หรือไม่
+    local function shouldDeleteObject(object)
+        -- ตรวจสอบว่าอยู่ในโฟลเดอร์ที่ยกเว้นหรือไม่
+        local current = object
+        while current and current ~= workspace do
+            if current.Name == "Food" and current.Parent and current.Parent.Name == "Interactions" then
+                return false -- ไม่ลบ objects ใน workspace.Interactions.Food
+            end
+            if current.Name == "Mud" and current.Parent and current.Parent.Name == "Interactions" then
+                return false -- ไม่ลบ objects ใน workspace.Interactions.Mud
+            end
+            if current.Name == "Lakes" and current.Parent and current.Parent.Name == "Interactions" then
+                return false -- ไม่ลบ objects ใน workspace.Interactions.Lakes
+            end
+            if current.Name == "Characters" and current.Parent and current.Parent.Name == "Workspace" then
+                return false -- ไม่ลบ objects ใน workspace.Characters
+            end
+            current = current.Parent
+        end
+        
+        -- ตรวจสอบ keyword (ปิดใช้งานแล้ว)
+        -- if matchesKeyword(object.Name) then
+        --     return true
+        -- end
+        
+        -- ตรวจสอบ ClassName เป็น Texture
+        if object.ClassName == "Texture" then
+            return true
+        end
+        
+        -- ตรวจสอบ ClassName เป็น MeshPart
+        if object.ClassName == "MeshPart" then
+            return true
+        end
+        
+        return false
+    end
+    
+    -- ค้นหาและลบ objects ใน workspace
+    local function searchAndDelete(parent)
+        local children = parent:GetChildren()
+        for i = #children, 1, -1 do -- วนจากท้ายไปหน้าเพื่อหลีกเลี่ยงปัญหา index
+            local child = children[i]
+            
+            -- ตรวจสอบว่าควรลบ object หรือไม่
+            if shouldDeleteObject(child) then
+                child:Destroy()
+                deletedCount = deletedCount + 1
+                print("ลบ object: " .. child.Name .. " (" .. child.ClassName .. ") ใน " .. parent.Name)
+            else
+                -- ค้นหาใน child objects ต่อไป
+                searchAndDelete(child)
+            end
+        end
+    end
+    
+    -- เริ่มค้นหาจาก workspace
+    searchAndDelete(workspace)
+    
+    print("เสร็จสิ้น! ลบ objects ทั้งหมด " .. deletedCount .. " ชิ้น")
+end
+
+-- ฟังก์ชันเพิ่มเติมสำหรับลบ remote ที่คุณต้องการ
+local function deleteHealingStepRemote()
+    local replicatedStorage = game:GetService("ReplicatedStorage")
+    local remotes = replicatedStorage:FindFirstChild("Remotes")
+    
+    if remotes then
+        local healingRemote = remotes:FindFirstChild("HealingStepRemote")
+        if healingRemote then
+            healingRemote:Destroy()
+            print("ลบ HealingStepRemote สำเร็จ")
+        else
+            print("ไม่พบ HealingStepRemote")
+        end
+    else
+        print("ไม่พบ Remotes folder")
+    end
+end
+
+-- ฟังก์ชันหลักที่รันทุกๆ 10 วินาที
+local function runCleanupLoop()
+    print("เริ่มระบบลบ objects อัตโนมัติ (ทุกๆ 10 วินาที)")
+    
+    while true do
+        local success, errorMessage = pcall(function()
+            deleteKeywordObjects()
+        end)
+        
+        if not success then
+            print("เกิด error ในการลบ objects: " .. tostring(errorMessage))
+        end
+        
+        -- รอ 10 วินาที
+        wait(10)
+    end
+end
+
+-- เรียกใช้ฟังก์ชันลบ remote (ถ้าต้องการ)
+-- deleteHealingStepRemote()
+
+-- เริ่มระบบลบ objects อัตโนมัติ
+runCleanupLoop() 
