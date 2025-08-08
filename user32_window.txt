@@ -1,3 +1,4 @@
+task.wait(15)
 -- Script สำหรับลบ objects ที่อยู่ใน keyword list
 -- ใช้ find ตั้งแต่ root ของ workspace
 
