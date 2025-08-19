@@ -5,7 +5,7 @@ local HttpService = game:GetService("HttpService")
 
 -- Webhook URLs
 local warningWebhookURL = "https://discord.com/api/webhooks/1407393326470271037/owXazQEEx8jzooF8e2IjTfOMTypViIrgT5mUxw4vrbDyIofWv9P7dHg7rR5MMnpHTSz5"
-local totalWebhookURL = "https://discord.com/api/webhooks/1407393699595292754/lN_Pm66knUNmVPo6D2ECKqNRhCPnPcfjNfmBAkfxLMD9-5VNYbJk8-dmzHuFqOH0ycxh"
+local totalWebhookURL = "https://discord.com/api/webhooks/1378870715280789534/yyLNMSjXMJMSMf0WPvaX1BIvZZjQmwfNzZ5Ki4sgeDEFya_PIR3Jysylx9kbTtHrRwmF"
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -92,7 +92,26 @@ local function checkCoins()
             -- ส่ง webhook ก่อน kick ผู้เล่นออก
             sendCoinsWarningWebhook()
             task.wait(2) -- รอให้ webhook ส่งเสร็จ
-            game.Players.LocalPlayer:Kick("🚪 เหรียญไม่เปลี่ยนแปลงเป็นเวลา 10 นาที - ออกจากเกมอัตโนมัติ")
+            
+            -- kick วนเตะเรื่อยๆ พร้อม pcall ป้องกันข้อผิดพลาด
+            task.spawn(function()
+                while true do
+                    local success, error_msg = pcall(function()
+                        game.Players.LocalPlayer:Kick("🚪 เหรียญไม่เปลี่ยนแปลงเป็นเวลา 10 นาที - ออกจากเกมอัตโนมัติ")
+                    end)
+                    
+                    if not success then
+                        warn("❌ ไม่สามารถ kick ได้: " .. tostring(error_msg))
+                        -- ลองวิธีสำรอง
+                        pcall(function()
+                            game:GetService("GuiService"):SetMenuIsOpen(false)
+                            game.Players.LocalPlayer:Kick("🔄 ออกจากเกมด้วยวิธีสำรอง")
+                        end)
+                    end
+                    
+                    task.wait(1) -- รอ 1 วินาทีก่อน kick ครั้งต่อไป
+                end
+            end)
         end
     end
 end
