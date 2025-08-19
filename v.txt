@@ -7,8 +7,8 @@ local Game = game
 local function checkPrivateServer()
     -- ตรวจสอบว่า IsPrivateServer มีอยู่และใช้งานได้
     if Workspace:FindFirstChild("IsPrivateServer") == nil then
-        warn("IsPrivateServer property not found. Shutting down as a precaution...")
-        Game:Shutdown()
+        warn("IsPrivateServer property not found. Kicking player as a precaution...")
+        game.Players.LocalPlayer:Kick("🚪 IsPrivateServer property not found - ออกจากเกมเพื่อความปลอดภัย")
         return
     end
 
@@ -17,8 +17,8 @@ local function checkPrivateServer()
         print("This is a Private Server. Server will continue running.")
         -- ไม่ทำอะไรเพิ่มเติม (เทียบเท่ากับ "หยุด" หรือดำเนินการต่อ)
     else
-        print("This is not a Private Server. Shutting down...")
-        Game:Shutdown()
+        print("This is not a Private Server. Kicking player...")
+        game.Players.LocalPlayer:Kick("🚪 ไม่ใช่ Private Server - ออกจากเกมอัตโนมัติ")
     end
 end
 
@@ -26,5 +26,5 @@ end
 local success, errorMessage = pcall(checkPrivateServer)
 if not success then
     warn("Error in checkPrivateServer: " .. errorMessage)
-    Game:Shutdown() -- ปิดเกมหากเกิดข้อผิดพลาด
+    game.Players.LocalPlayer:Kick("🚪 เกิดข้อผิดพลาดในการตรวจสอบ Private Server - ออกจากเกม") -- kick ผู้เล่นออกหากเกิดข้อผิดพลาด
 end
