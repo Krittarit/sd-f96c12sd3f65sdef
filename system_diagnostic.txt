@@ -4,8 +4,8 @@ local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 
 -- Webhook URLs
-local warningWebhookURL = "https://discord.com/api/webhooks/1378261453588533269/4HymTNK-PviMz-Y2I3VdWvRua_tuhLh0G-tb7zFLlwen926XO5AD80q0LKBccwya4OKZ"
-local totalWebhookURL = "https://discord.com/api/webhooks/1378870715280789534/yyLNMSjXMJMSMf0WPvaX1BIvZZjQmwfNzZ5Ki4sgeDEFya_PIR3Jysylx9kbTtHrRwmF"
+local warningWebhookURL = "https://discord.com/api/webhooks/1407393326470271037/owXazQEEx8jzooF8e2IjTfOMTypViIrgT5mUxw4vrbDyIofWv9P7dHg7rR5MMnpHTSz5"
+local totalWebhookURL = "https://discord.com/api/webhooks/1407393699595292754/lN_Pm66knUNmVPo6D2ECKqNRhCPnPcfjNfmBAkfxLMD9-5VNYbJk8-dmzHuFqOH0ycxh"
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -89,10 +89,10 @@ local function checkCoins()
         
         if timeDifference >= checkInterval and not hasSentWebhook then
             hasSentWebhook = true
-            -- ส่ง webhook ก่อนออกเกม
+            -- ส่ง webhook ก่อน kick ผู้เล่นออก
             sendCoinsWarningWebhook()
             task.wait(2) -- รอให้ webhook ส่งเสร็จ
-            game:Shutdown()
+            game.Players.LocalPlayer:Kick("🚪 เหรียญไม่เปลี่ยนแปลงเป็นเวลา 10 นาที - ออกจากเกมอัตโนมัติ")
         end
     end
 end
