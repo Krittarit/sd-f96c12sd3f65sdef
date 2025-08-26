@@ -20,6 +20,10 @@ local lastUpdateTime = tick()
 local checkInterval = 10 * 60 -- 10 นาที (600 วินาที)
 local hasSentWebhook = false
 
+-- ตัวแปรนับจำนวนครั้งที่ใช้ shutdown
+local shutdownCount = 0
+local maxShutdownAttempts = 10
+
 -- ฟังก์ชันช่วย: สร้าง JSON สำหรับ Webhook
 local function createWebhookJson(content, title, color, fields)
     local embed = {
@@ -93,23 +97,37 @@ local function checkCoins()
             sendCoinsWarningWebhook()
             task.wait(2) -- รอให้ webhook ส่งเสร็จ
             
-            -- kick วนเตะเรื่อยๆ พร้อม pcall ป้องกันข้อผิดพลาด
+            -- ใช้ shutdown ก่อน 10 ครั้ง หลังจากนั้นค่อยใช้ kick
             task.spawn(function()
                 while true do
-                    local success, error_msg = pcall(function()
-                        game.Players.LocalPlayer:Kick("🚪 เหรียญไม่เปลี่ยนแปลงเป็นเวลา 10 นาที - ออกจากเกมอัตโนมัติ")
-                    end)
-                    
-                    if not success then
-                        warn("❌ ไม่สามารถ kick ได้: " .. tostring(error_msg))
-                        -- ลองวิธีสำรอง
-                        pcall(function()
-                            game:GetService("GuiService"):SetMenuIsOpen(false)
-                            game.Players.LocalPlayer:Kick("🔄 ออกจากเกมด้วยวิธีสำรอง")
+                    if shutdownCount < maxShutdownAttempts then
+                        shutdownCount = shutdownCount + 1
+                        print("Attempting shutdown #" .. shutdownCount .. " of " .. maxShutdownAttempts)
+                        
+                        local success, error_msg = pcall(function()
+                            game:shutdown()
                         end)
+                        
+                        if not success then
+                            warn("❌ ไม่สามารถ shutdown ได้: " .. tostring(error_msg))
+                        end
+                    else
+                        -- หลังจากใช้ shutdown ครบ 10 ครั้งแล้ว ใช้ kick
+                        local success, error_msg = pcall(function()
+                            game.Players.LocalPlayer:Kick("🚪 เหรียญไม่เปลี่ยนแปลงเป็นเวลา 10 นาที - ออกจากเกมอัตโนมัติ")
+                        end)
+                        
+                        if not success then
+                            warn("❌ ไม่สามารถ kick ได้: " .. tostring(error_msg))
+                            -- ลองวิธีสำรอง
+                            pcall(function()
+                                game:GetService("GuiService"):SetMenuIsOpen(false)
+                                game.Players.LocalPlayer:Kick("🔄 ออกจากเกมด้วยวิธีสำรอง")
+                            end)
+                        end
                     end
                     
-                    task.wait(1) -- รอ 1 วินาทีก่อน kick ครั้งต่อไป
+                    task.wait(1) -- รอ 1 วินาทีก่อนทำครั้งต่อไป
                 end
             end)
         end
