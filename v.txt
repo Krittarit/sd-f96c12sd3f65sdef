@@ -3,12 +3,22 @@ task.wait(60)
 local Workspace = game:GetService("Workspace")
 local Game = game
 
+-- ตัวแปรนับจำนวนครั้งที่ใช้ shutdown
+local shutdownCount = 0
+local maxShutdowns = 10
+
 -- ฟังก์ชันตรวจสอบและจัดการ Private Server
 local function checkPrivateServer()
     -- ตรวจสอบว่า IsPrivateServer มีอยู่และใช้งานได้
     if Workspace:FindFirstChild("IsPrivateServer") == nil then
         warn("IsPrivateServer property not found. Kicking player as a precaution...")
-        game.Players.LocalPlayer:Kick("🚪 IsPrivateServer property not found - ออกจากเกมเพื่อความปลอดภัย")
+        if shutdownCount < maxShutdowns then
+            shutdownCount = shutdownCount + 1
+            print("ใช้ game:shutdown() ครั้งที่ " .. shutdownCount .. " จาก " .. maxShutdowns)
+            game:shutdown()
+        else
+            game.Players.LocalPlayer:Kick("🚪 IsPrivateServer property not found - ออกจากเกมเพื่อความปลอดภัย")
+        end
         return
     end
 
@@ -18,7 +28,13 @@ local function checkPrivateServer()
         -- ไม่ทำอะไรเพิ่มเติม (เทียบเท่ากับ "หยุด" หรือดำเนินการต่อ)
     else
         print("This is not a Private Server. Kicking player...")
-        game.Players.LocalPlayer:Kick("🚪 ไม่ใช่ Private Server - ออกจากเกมอัตโนมัติ")
+        if shutdownCount < maxShutdowns then
+            shutdownCount = shutdownCount + 1
+            print("ใช้ game:shutdown() ครั้งที่ " .. shutdownCount .. " จาก " .. maxShutdowns)
+            game:shutdown()
+        else
+            game.Players.LocalPlayer:Kick("🚪 ไม่ใช่ Private Server - ออกจากเกมอัตโนมัติ")
+        end
     end
 end
 
@@ -26,5 +42,11 @@ end
 local success, errorMessage = pcall(checkPrivateServer)
 if not success then
     warn("Error in checkPrivateServer: " .. errorMessage)
-    game.Players.LocalPlayer:Kick("🚪 เกิดข้อผิดพลาดในการตรวจสอบ Private Server - ออกจากเกม") -- kick ผู้เล่นออกหากเกิดข้อผิดพลาด
+    if shutdownCount < maxShutdowns then
+        shutdownCount = shutdownCount + 1
+        print("ใช้ game:shutdown() ครั้งที่ " .. shutdownCount .. " จาก " .. maxShutdowns)
+        game:shutdown()
+    else
+        game.Players.LocalPlayer:Kick("🚪 เกิดข้อผิดพลาดในการตรวจสอบ Private Server - ออกจากเกม") -- kick ผู้เล่นออกหากเกิดข้อผิดพลาด
+    end
 end
