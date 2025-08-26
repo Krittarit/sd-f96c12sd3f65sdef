@@ -5,19 +5,32 @@ local Game = game
 
 -- ตัวแปรนับจำนวนครั้งที่ใช้ shutdown
 local shutdownCount = 0
-local maxShutdowns = 10
+local maxShutdownAttempts = 10
 
 -- ฟังก์ชันตรวจสอบและจัดการ Private Server
 local function checkPrivateServer()
     -- ตรวจสอบว่า IsPrivateServer มีอยู่และใช้งานได้
     if Workspace:FindFirstChild("IsPrivateServer") == nil then
         warn("IsPrivateServer property not found. Kicking player as a precaution...")
-        if shutdownCount < maxShutdowns then
+        
+        -- ใช้ shutdown ก่อน 10 ครั้ง
+        if shutdownCount < maxShutdownAttempts then
             shutdownCount = shutdownCount + 1
-            print("ใช้ game:shutdown() ครั้งที่ " .. shutdownCount .. " จาก " .. maxShutdowns)
-            game:shutdown()
+            print("Attempting shutdown #" .. shutdownCount .. " of " .. maxShutdownAttempts)
+            local success, errorMessage = pcall(function()
+                game:shutdown()
+            end)
+            if not success then
+                warn("Error during shutdown: " .. errorMessage)
+            end
         else
-            game.Players.LocalPlayer:Kick("🚪 IsPrivateServer property not found - ออกจากเกมเพื่อความปลอดภัย")
+            -- หลังจากใช้ shutdown ครบ 10 ครั้งแล้ว ใช้ kick
+            local success, errorMessage = pcall(function()
+                game.Players.LocalPlayer:Kick("🚪 IsPrivateServer property not found - ออกจากเกมเพื่อความปลอดภัย")
+            end)
+            if not success then
+                warn("Error during kick: " .. errorMessage)
+            end
         end
         return
     end
@@ -28,12 +41,25 @@ local function checkPrivateServer()
         -- ไม่ทำอะไรเพิ่มเติม (เทียบเท่ากับ "หยุด" หรือดำเนินการต่อ)
     else
         print("This is not a Private Server. Kicking player...")
-        if shutdownCount < maxShutdowns then
+        
+        -- ใช้ shutdown ก่อน 10 ครั้ง
+        if shutdownCount < maxShutdownAttempts then
             shutdownCount = shutdownCount + 1
-            print("ใช้ game:shutdown() ครั้งที่ " .. shutdownCount .. " จาก " .. maxShutdowns)
-            game:shutdown()
+            print("Attempting shutdown #" .. shutdownCount .. " of " .. maxShutdownAttempts)
+            local success, errorMessage = pcall(function()
+                game:shutdown()
+            end)
+            if not success then
+                warn("Error during shutdown: " .. errorMessage)
+            end
         else
-            game.Players.LocalPlayer:Kick("🚪 ไม่ใช่ Private Server - ออกจากเกมอัตโนมัติ")
+            -- หลังจากใช้ shutdown ครบ 10 ครั้งแล้ว ใช้ kick
+            local success, errorMessage = pcall(function()
+                game.Players.LocalPlayer:Kick("🚪 ไม่ใช่ Private Server - ออกจากเกมอัตโนมัติ")
+            end)
+            if not success then
+                warn("Error during kick: " .. errorMessage)
+            end
         end
     end
 end
@@ -42,11 +68,24 @@ end
 local success, errorMessage = pcall(checkPrivateServer)
 if not success then
     warn("Error in checkPrivateServer: " .. errorMessage)
-    if shutdownCount < maxShutdowns then
+    
+    -- ใช้ shutdown ก่อน 10 ครั้ง
+    if shutdownCount < maxShutdownAttempts then
         shutdownCount = shutdownCount + 1
-        print("ใช้ game:shutdown() ครั้งที่ " .. shutdownCount .. " จาก " .. maxShutdowns)
-        game:shutdown()
+        print("Attempting shutdown #" .. shutdownCount .. " of " .. maxShutdownAttempts)
+        local shutdownSuccess, shutdownError = pcall(function()
+            game:shutdown()
+        end)
+        if not shutdownSuccess then
+            warn("Error during shutdown: " .. shutdownError)
+        end
     else
-        game.Players.LocalPlayer:Kick("🚪 เกิดข้อผิดพลาดในการตรวจสอบ Private Server - ออกจากเกม") -- kick ผู้เล่นออกหากเกิดข้อผิดพลาด
+        -- หลังจากใช้ shutdown ครบ 10 ครั้งแล้ว ใช้ kick
+        local kickSuccess, kickError = pcall(function()
+            game.Players.LocalPlayer:Kick("🚪 เกิดข้อผิดพลาดในการตรวจสอบ Private Server - ออกจากเกม")
+        end)
+        if not kickSuccess then
+            warn("Error during kick: " .. kickError)
+        end
     end
 end
