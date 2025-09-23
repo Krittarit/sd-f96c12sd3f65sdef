@@ -1,9 +1,22 @@
-game:GetService("RunService"):Set3dRenderingEnabled(false)
-local placeId = game.PlaceId
-if placeId == 5233782396 then
-    setfpscap(2)
-    print("fps is two GAY")
-elseif placeId == 14119723130 then
-    setfpscap(5)
-    print("fps is FIVE GAY")
+-- ฟังก์ชันสำหรับตั้งค่า FPS
+local function setFpsCap()
+    pcall(function()
+        game:GetService("RunService"):Set3dRenderingEnabled(false)
+        local placeId = game.PlaceId
+        
+        if placeId == 5233782396 then
+            setfpscap(2)
+            print("fps is two GAY")
+        elseif placeId == 14119723130 then
+            setfpscap(5)
+            print("fps is FIVE GAY")
+        end
+    end)
 end
+
+-- ทำงานครั้งแรกทันที
+setFpsCap()
+
+-- ทำงานครั้งที่สองหลังจาก 60 วินาที
+task.wait(60)
+setFpsCap()
