@@ -25,9 +25,11 @@ task.wait(15)
 --     "Skeleton"
 -- }
 
--- ฟังก์ชันสำหรับลบ object ที่มีชื่อตรงกับ keyword
+    -- ฟังก์ชันสำหรับลบ object ที่มีชื่อตรงกับ keyword
 local function deleteKeywordObjects()
     local workspace = game:GetService("Workspace")
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
     local deletedCount = 0
     
     print("เริ่มค้นหาและลบ Texture และ MeshPart objects...")
@@ -107,6 +109,44 @@ local function deleteKeywordObjects()
     
     -- เริ่มค้นหาจาก workspace
     searchAndDelete(workspace)
+    
+    -- ลบ MeshPart ใน Characters (ยกเว้น localplayer)
+    local characters = workspace:FindFirstChild("Characters")
+    if characters then
+        print("เริ่มลบ MeshPart ใน Characters...")
+        local characterChildren = characters:GetChildren()
+        for i = #characterChildren, 1, -1 do
+            local character = characterChildren[i]
+            
+            -- ตรวจสอบว่าไม่ใช่ localplayer
+            if character.Name ~= localPlayer.Name then
+                print("กำลังลบ MeshPart ใน character: " .. character.Name)
+                
+                -- ค้นหาและลบ MeshPart ใน character นี้
+                local function deleteMeshPartsInCharacter(parent)
+                    local children = parent:GetChildren()
+                    for j = #children, 1, -1 do
+                        local child = children[j]
+                        
+                        if child.ClassName == "MeshPart" then
+                            child:Destroy()
+                            deletedCount = deletedCount + 1
+                            print("ลบ MeshPart: " .. child.Name .. " ใน character " .. character.Name)
+                        else
+                            -- ค้นหาใน child objects ต่อไป
+                            deleteMeshPartsInCharacter(child)
+                        end
+                    end
+                end
+                
+                deleteMeshPartsInCharacter(character)
+            else
+                print("ข้าม localplayer: " .. character.Name)
+            end
+        end
+    else
+        print("ไม่พบ Characters folder")
+    end
     
     print("เสร็จสิ้น! ลบ objects ทั้งหมด " .. deletedCount .. " ชิ้น")
 end
