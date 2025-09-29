@@ -25,6 +25,40 @@ task.wait(15)
 --     "Skeleton"
 -- }
 
+-- ฟังก์ชันสำหรับลบ MeshPart ทั้งหมดใน workspace.Characters
+local function deleteCharactersMeshParts()
+    local workspace = game:GetService("Workspace")
+    local characters = workspace:FindFirstChild("Characters")
+    local deletedCount = 0
+    
+    if characters then
+        print("เริ่มค้นหาและลบ MeshPart ใน workspace.Characters...")
+        
+        local function searchAndDeleteInCharacters(parent)
+            local children = parent:GetChildren()
+            for i = #children, 1, -1 do
+                local child = children[i]
+                
+                if child.ClassName == "MeshPart" then
+                    child:Destroy()
+                    deletedCount = deletedCount + 1
+                    print("ลบ MeshPart: " .. child.Name .. " ใน " .. parent.Name)
+                else
+                    -- ค้นหาใน child objects ต่อไป
+                    searchAndDeleteInCharacters(child)
+                end
+            end
+        end
+        
+        searchAndDeleteInCharacters(characters)
+        print("เสร็จสิ้น! ลบ MeshPart ใน Characters ทั้งหมด " .. deletedCount .. " ชิ้น")
+    else
+        print("ไม่พบ workspace.Characters")
+    end
+    
+    return deletedCount
+end
+
 -- ฟังก์ชันสำหรับลบ object ที่มีชื่อตรงกับ keyword
 local function deleteKeywordObjects()
     local workspace = game:GetService("Workspace")
@@ -67,9 +101,6 @@ local function deleteKeywordObjects()
             end
             if current.Name == "Lakes" and current.Parent and current.Parent.Name == "Interactions" then
                 return false -- ไม่ลบ MeshPart ใน workspace.Interactions.Lakes
-            end
-            if current.Name == "Characters" and current.Parent and current.Parent.Name == "Workspace" then
-                return false -- ไม่ลบ MeshPart ใน workspace.Characters
             end
             current = current.Parent
         end
@@ -140,6 +171,15 @@ local function runCleanupLoop()
         
         if not success then
             print("เกิด error ในการลบ objects: " .. tostring(errorMessage))
+        end
+        
+        -- ลบ MeshPart ใน Characters
+        local success2, errorMessage2 = pcall(function()
+            deleteCharactersMeshParts()
+        end)
+        
+        if not success2 then
+            print("เกิด error ในการลบ MeshPart ใน Characters: " .. tostring(errorMessage2))
         end
         
         -- รอ 10 วินาที
