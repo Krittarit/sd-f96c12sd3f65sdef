@@ -116,4 +116,25 @@ local args = {
 	false
 }
 game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
+
+local args = {
+	"RadialSoundDetection",
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
+
+local args = {
+	"HUDMutationPopup",
+	"None"
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
+wait(0.5)
+
+local args = {
+	"MarkerDistances",
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeSettingsRemote"):FireServer(unpack(args))
 
