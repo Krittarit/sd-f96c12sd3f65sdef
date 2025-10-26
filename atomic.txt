@@ -124,7 +124,7 @@ shoomsLabel.BackgroundTransparency = 1
 shoomsLabel.TextColor3 = Color3.new(1, 1, 0) -- สีเหลือง
 shoomsLabel.Font = Enum.Font.SourceSansBold
 shoomsLabel.TextScaled = true
-shoomsLabel.Text = "☄️ GAE: 0"
+shoomsLabel.Text = "❤️ BRAIN: 0"
 shoomsLabel.ZIndex = 12
 shoomsLabel.Parent = mainContainer
 
@@ -264,3 +264,4 @@ while true do
         task.wait(5)
     end
 end
+
